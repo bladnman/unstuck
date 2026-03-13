@@ -1,0 +1,51 @@
+{
+  "skill_name": "unstuck-me",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "ok so here's what's going on. I've got this quarterly review coming up next week and I still haven't pulled together the data from the engineering team. Sarah keeps asking me about it and I keep saying yeah I'll get to it but honestly I'm not sure where half the metrics live anymore since we switched dashboards last month. But also — and this is totally separate — I've been thinking a lot about this API redesign thing. Like the auth flow is such a mess right now with the token handling and I keep thinking if we just ripped it out and did OAuth properly from scratch we could support third-party integrations which is something the product team has been asking about forever. But I know that's a big lift and I can't even think about starting it until after Q2 planning. Oh and speaking of the team — I found out yesterday that Marcus might be leaving. He hasn't said anything official but I overheard him on a call with a recruiter and it's been eating at me because he's the only one who really understands the billing system. If he goes we're in trouble and I don't even know how to bring it up without making it weird. And then there's this other thing that's more of a personal thing — I've been wanting to learn Rust for like two years now and I keep not doing it. Every time I sit down to start I get pulled into something urgent. I signed up for that Rustlings course three months ago and haven't touched it. I don't know why I'm mentioning it, it just feels like one more thing that I want to do and can't get to.",
+      "expected_output": "Creates 4 distinct item folders (quarterly review, API redesign, Marcus leaving concern, learn Rust), each with ITEM.md. Preserves the user's voice and emotional weight. Saves raw input. Creates session and index files. Responds conversationally, not mechanically.",
+      "files": [],
+      "expectations": [
+        "Created unstuck/ directory with items/ and sessions/ subdirectories",
+        "Created at least 4 separate item folders under unstuck/items/",
+        "Each item folder contains an ITEM.md file",
+        "Raw input saved to the session's raw/ directory",
+        "INDEX.md created at unstuck/INDEX.md listing all items",
+        "SESSION.md created in the session directory",
+        "The quarterly review item captures the urgency and the dashboard migration blocker",
+        "The Marcus/team item captures the emotional weight — anxiety, not just a staffing fact"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "hey so update on a couple things. First, the quarterly review — I actually found where the metrics live, they're in the new Grafana board under the eng-metrics workspace. So that blocker is cleared but now I realize I need to write the narrative section and I have no idea what story to tell with the numbers. Also I've got a totally new thing — my neighbor asked me if I'd be interested in going in on a rental property investment with him. He's done it before and it sounds like a solid deal, like $40k each for a duplex near campus. I keep thinking about it but I don't know anything about being a landlord and the timing is weird with everything else going on.",
+      "expected_output": "Reads existing INDEX.md, updates the quarterly-review-prep item with new context (blocker cleared, new sub-problem identified) without overwriting original capture, creates a new rental-property-investment item, updates INDEX and SESSION files.",
+      "files": ["evals/files/prepopulated-unstuck/INDEX.md", "evals/files/prepopulated-unstuck/items/quarterly-review-prep/ITEM.md", "evals/files/prepopulated-unstuck/items/quarterly-review-prep/context/2026-03-10_initial-capture.md", "evals/files/prepopulated-unstuck/items/api-redesign-idea/ITEM.md", "evals/files/prepopulated-unstuck/items/api-redesign-idea/context/2026-03-10_initial-capture.md", "evals/files/prepopulated-unstuck/items/marcus-departure-concern/ITEM.md", "evals/files/prepopulated-unstuck/items/marcus-departure-concern/context/2026-03-10_initial-capture.md", "evals/files/prepopulated-unstuck/items/learn-rust/ITEM.md", "evals/files/prepopulated-unstuck/items/learn-rust/context/2026-03-10_initial-capture.md", "evals/files/prepopulated-unstuck/sessions/2026-03-10/SESSION.md"],
+      "expectations": [
+        "Read the existing INDEX.md to understand prior items",
+        "Updated quarterly-review-prep ITEM.md with new information without overwriting original context",
+        "Added a new context file in quarterly-review-prep/context/ for this session's update",
+        "Created a new item folder for the rental property investment",
+        "The rental property item captures the financial details and the ambivalence",
+        "INDEX.md updated to include the new item and reflect changes to existing items",
+        "SESSION.md created for today's session referencing both the updated and new items"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I just recorded a voice memo on my walk and here's the transcript. Can you process this?\n\n---\n\nOkay so I've been thinking about three things. The first thing is I really want to start a newsletter. I've been reading a lot of newsletters lately and I think I have a perspective on developer tooling that's different from what's out there. Like most of the DX newsletters are either super corporate or super indie and I think there's a middle ground where you talk about how real teams actually evaluate and adopt tools. Not reviews, more like anthropology of developer tool adoption. I think I could do one post every two weeks to start. The second thing is completely unrelated — we need to figure out the on-call rotation before the end of the month because right now it's just me and Devon and that's not sustainable, especially with the holidays coming up. I talked to my manager about it and she said she'd bring it up in the leads meeting but that was two weeks ago and nothing happened. I might need to just draft a proposal myself and send it around. And the third thing which is kind of related to the first thing actually is that I've been wanting to write more in general. Not just the newsletter but like, technical blog posts, maybe conference talk proposals. I feel like I have all these opinions and observations from ten years in the industry and they're just sitting in my head not doing anything. The newsletter could be a forcing function for that but it's also its own thing. Like the writing desire is bigger than just the newsletter if that makes sense.",
+      "expected_output": "Saves the full transcript to raw/. Extracts 3 items: newsletter idea, on-call rotation, writing practice/desire. Recognizes that the newsletter and writing desire are related but distinct. Cross-references between them. Captures the nuance that 'the writing desire is bigger than just the newsletter.'",
+      "files": [],
+      "expectations": [
+        "Full transcript saved to the session's raw/ directory",
+        "Created at least 3 item folders: newsletter, on-call rotation, and writing/creative expression",
+        "Newsletter and writing items are cross-referenced as connected but distinct",
+        "The writing item captures the nuance that it's bigger than just the newsletter",
+        "On-call rotation item captures the specific blocker (manager hasn't followed through) and the deadline (end of month)",
+        "Each item's context/ folder contains an extracted portion referencing back to the raw transcript",
+        "INDEX.md and SESSION.md created"
+      ]
+    }
+  ]
+}

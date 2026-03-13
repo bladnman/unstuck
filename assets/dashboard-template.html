@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unstuck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0c0e14;
+    --surface: #14171f;
+    --surface2: #1c2029;
+    --surface3: #232733;
+    --border: #2a2f3d;
+    --border-subtle: #1e222d;
+    --text: #e8eaf0;
+    --text-secondary: #9399ab;
+    --text-dim: #636980;
+    --accent: #7b9cff;
+    --accent-glow: rgba(123, 156, 255, 0.12);
+    --urgent: #ff6674;
+    --urgent-glow: rgba(255, 102, 116, 0.12);
+    --active-color: #7b9cff;
+    --simmering-color: #ffb347;
+    --parked-color: #7c8293;
+    --archived-color: #4a4f5e;
+    --resolved-color: #5dd9a3;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 28px 36px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent) 0%, #a78bfa 100%);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #0c0e14;
+    box-shadow: 0 2px 12px rgba(123, 156, 255, 0.25);
+  }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+
+  .header-right {
+    display: flex; align-items: center; gap: 16px;
+  }
+
+  .stat-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .stat-pill .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+  }
+
+  .stat-pill .count { font-weight: 600; color: var(--text); }
+
+  .meta-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 20px 36px 0;
+  }
+
+  .tab {
+    padding: 9px 22px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid transparent;
+    border-bottom: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    transition: all 0.2s;
+    position: relative;
+    bottom: -1px;
+  }
+
+  .tab:hover { color: var(--text-secondary); }
+
+  .tab.active {
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--border-subtle);
+  }
+
+  /* ── View Container ── */
+  .view-container {
+    margin: 0 36px 36px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+    min-height: 500px;
+    overflow: hidden;
+  }
+
+  .view-inner { padding: 24px; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    padding: 8px 14px 8px 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='11' cy='11' r='7' stroke='%23636980' stroke-width='2'/%3E%3Cpath d='M16 16L20 20' stroke='%23636980' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-dim); }
+
+  .filter-group { display: flex; gap: 3px; }
+
+  .filter-btn {
+    padding: 7px 15px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:first-child { border-radius: 6px 0 0 6px; }
+  .filter-btn:last-child { border-radius: 0 6px 6px 0; }
+  .filter-btn:not(:first-child) { border-left: none; }
+
+  .filter-btn:hover { color: var(--text-secondary); background: var(--surface2); }
+
+  .filter-btn.active {
+    color: var(--accent);
+    background: var(--accent-glow);
+    border-color: rgba(123, 156, 255, 0.25);
+  }
+
+  .filter-btn.active + .filter-btn { border-left-color: rgba(123, 156, 255, 0.25); }
+
+  /* ── Table View ── */
+  .table-view { overflow-x: auto; }
+
+  .table-view table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table-view th {
+    text-align: left;
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+
+  .table-view th:hover { color: var(--text-secondary); }
+
+  .table-view th .sort-arrow {
+    margin-left: 4px;
+    opacity: 0.3;
+    font-size: 12px;
+  }
+
+  .table-view th.sorted .sort-arrow { opacity: 1; color: var(--accent); }
+
+  .table-view td {
+    padding: 16px 18px;
+    font-size: 15px;
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: top;
+    transition: background 0.1s;
+  }
+
+  .table-view tbody tr { cursor: default; }
+  .table-view tbody tr:hover td { background: rgba(123, 156, 255, 0.02); }
+
+  .item-name {
+    font-weight: 600;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+
+  .item-name.active { color: var(--active-color); }
+  .item-name.simmering { color: var(--simmering-color); }
+  .item-name.parked { color: var(--parked-color); }
+  .item-name.archived { color: var(--archived-color); }
+  .item-name.resolved { color: var(--resolved-color); }
+
+  .item-summary {
+    color: var(--text-secondary);
+    max-width: 480px;
+    line-height: 1.45;
+  }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+
+  .badge.active { background: rgba(123, 156, 255, 0.1); color: var(--active-color); }
+  .badge.active::before { background: var(--active-color); }
+  .badge.simmering { background: rgba(255, 179, 71, 0.1); color: var(--simmering-color); }
+  .badge.simmering::before { background: var(--simmering-color); }
+  .badge.parked { background: rgba(124, 130, 147, 0.12); color: var(--parked-color); }
+  .badge.parked::before { background: var(--parked-color); }
+  .badge.archived { background: rgba(74, 79, 94, 0.15); color: var(--archived-color); }
+  .badge.archived::before { background: var(--archived-color); }
+  .badge.resolved { background: rgba(93, 217, 163, 0.1); color: var(--resolved-color); }
+  .badge.resolved::before { background: var(--resolved-color); }
+
+  .status-cell {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .status-cell.urgent {
+    color: var(--urgent);
+    font-weight: 600;
+  }
+
+  .date-cell {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  /* ── Kanban View ── */
+  .kanban-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    padding: 24px;
+  }
+
+  .kanban-column { min-width: 0; }
+
+  .kanban-column-header {
+    padding: 12px 16px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid;
+    border-bottom: none;
+  }
+
+  .kanban-column.active .kanban-column-header {
+    background: linear-gradient(135deg, rgba(123, 156, 255, 0.12), rgba(123, 156, 255, 0.04));
+    color: var(--active-color);
+    border-color: rgba(123, 156, 255, 0.15);
+  }
+  .kanban-column.simmering .kanban-column-header {
+    background: linear-gradient(135deg, rgba(255, 179, 71, 0.12), rgba(255, 179, 71, 0.04));
+    color: var(--simmering-color);
+    border-color: rgba(255, 179, 71, 0.15);
+  }
+  .kanban-column.parked .kanban-column-header {
+    background: linear-gradient(135deg, rgba(124, 130, 147, 0.1), rgba(124, 130, 147, 0.03));
+    color: var(--parked-color);
+    border-color: rgba(124, 130, 147, 0.15);
+  }
+  .kanban-column.archived .kanban-column-header {
+    background: linear-gradient(135deg, rgba(74, 79, 94, 0.12), rgba(74, 79, 94, 0.04));
+    color: var(--archived-color);
+    border-color: rgba(74, 79, 94, 0.15);
+  }
+  .kanban-column.resolved .kanban-column-header {
+    background: linear-gradient(135deg, rgba(93, 217, 163, 0.1), rgba(93, 217, 163, 0.04));
+    color: var(--resolved-color);
+    border-color: rgba(93, 217, 163, 0.15);
+  }
+
+  .kanban-column-header .count {
+    background: rgba(255,255,255,0.08);
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .kanban-cards {
+    background: var(--surface2);
+    border: 1px solid var(--border-subtle);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    padding: 8px;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .kanban-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kanban-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+
+  .kanban-column.active .kanban-card::before { background: var(--active-color); }
+  .kanban-column.simmering .kanban-card::before { background: var(--simmering-color); }
+  .kanban-column.parked .kanban-card::before { background: var(--parked-color); }
+
+  .kanban-card:hover {
+    border-color: var(--border);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .kanban-card .card-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: var(--text);
+    padding-left: 8px;
+  }
+
+  .kanban-card .card-summary {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.45;
+    padding-left: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .kanban-card .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 8px;
+    padding-left: 8px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .kanban-card .card-status {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .kanban-card .card-status.urgent { color: var(--urgent); }
+
+  .kanban-card .card-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .kanban-empty {
+    padding: 28px 16px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-style: italic;
+    opacity: 0.6;
+  }
+
+  /* ── Timeline View ── */
+  .timeline-view { padding: 24px; overflow: auto; }
+
+  .timeline-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .timeline-nav {
+    display: flex; gap: 4px;
+  }
+
+  .timeline-nav button {
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .timeline-nav button:hover { background: var(--surface3); color: var(--text); }
+  .timeline-nav button.active { background: var(--accent-glow); color: var(--accent); border-color: rgba(123, 156, 255, 0.25); }
+
+  .timeline-period {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .gantt-wrapper {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: visible;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    background: var(--surface2);
+  }
+
+  .gantt-scroll { min-width: fit-content; }
+
+  .gantt-header-row {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .gantt-label-header {
+    flex: 0 0 260px;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-dim);
+    border-right: 1px solid var(--border);
+    position: sticky;
+    left: 0;
+    z-index: 6;
+    background: var(--surface);
+  }
+
+  .gantt-dates-header {
+    display: flex;
+    min-width: max-content;
+  }
+
+  .gantt-day-header {
+    flex: 1;
+    min-width: 40px;
+    padding: 10px 2px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-dim);
+    border-left: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .gantt-day-header .day-name {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-size: 12px;
+  }
+
+  .gantt-day-header .day-num { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--text-secondary); }
+
+  .gantt-day-header.weekend { background: rgba(255,255,255,0.015); }
+  .gantt-day-header.today { background: rgba(123, 156, 255, 0.08); }
+  .gantt-day-header.today .day-num { color: var(--accent); font-weight: 600; }
+
+  .gantt-row {
+    display: flex;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background 0.1s;
+  }
+
+  .gantt-row:last-child { border-bottom: none; }
+  .gantt-row:hover { background: rgba(123, 156, 255, 0.02); }
+
+  .gantt-row-label {
+    flex: 0 0 260px;
+    padding: 16px 20px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--surface2);
+  }
+
+  .gantt-row-label .label-name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .gantt-row-label .label-name.active { color: var(--active-color); }
+  .gantt-row-label .label-name.simmering { color: var(--simmering-color); }
+
+  .gantt-row-label .label-status {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .gantt-row-label .label-status.urgent { color: var(--urgent); font-weight: 500; }
+
+  .gantt-row-timeline {
+    display: flex;
+    position: relative;
+    min-width: max-content;
+  }
+
+  .gantt-cell {
+    flex: 1;
+    min-width: 40px;
+    position: relative;
+    border-left: 1px solid var(--border-subtle);
+  }
+
+  .gantt-cell.weekend { background: rgba(255,255,255,0.01); }
+
+  .gantt-cell.today::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: var(--accent);
+    opacity: 0.5;
+    transform: translateX(-50%);
+    z-index: 3;
+  }
+
+  .gantt-bar-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 22px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+  }
+
+  .gantt-bar {
+    height: 100%;
+    border-radius: 4px;
+    min-width: 6px;
+    position: relative;
+  }
+
+  .gantt-bar.active {
+    background: linear-gradient(90deg, var(--active-color), rgba(123, 156, 255, 0.6));
+    box-shadow: 0 1px 6px rgba(123, 156, 255, 0.2);
+  }
+
+  .gantt-bar.simmering {
+    background: linear-gradient(90deg, var(--simmering-color), rgba(255, 179, 71, 0.6));
+    box-shadow: 0 1px 6px rgba(255, 179, 71, 0.15);
+  }
+
+  .gantt-bar-label {
+    position: absolute;
+    left: calc(100% + 6px);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .gantt-due-diamond {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background: var(--urgent);
+    box-shadow: 0 0 8px rgba(255, 102, 116, 0.4);
+    z-index: 4;
+    border-radius: 2px;
+  }
+
+  /* Views */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  @media (max-width: 768px) {
+    .header, .tabs { padding-left: 20px; padding-right: 20px; }
+    .view-container { margin-left: 20px; margin-right: 20px; }
+    .kanban-view { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">U</div>
+    <h1>Unstuck</h1>
+  </div>
+  <div class="header-right">
+    <div id="statPills"></div>
+    <span class="meta-date" id="lastUpdated"></span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-view="table">Table</button>
+  <button class="tab" data-view="kanban">Board</button>
+  <button class="tab" data-view="gantt">Timeline</button>
+</div>
+
+<div class="view-container">
+  <div id="table" class="view active">
+    <div class="view-inner">
+      <div class="toolbar">
+        <input type="text" class="search-input" placeholder="Search items..." id="searchInput">
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="active">Active</button>
+          <button class="filter-btn" data-filter="simmering">Simmering</button>
+          <button class="filter-btn" data-filter="parked">Parked</button>
+          <button class="filter-btn" data-filter="archived">Archived</button>
+        </div>
+      </div>
+      <div class="table-view">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="name">Item <span class="sort-arrow">↕</span></th>
+              <th data-sort="summary">Summary <span class="sort-arrow">↕</span></th>
+              <th data-sort="section">Section <span class="sort-arrow">↕</span></th>
+              <th data-sort="status">Status <span class="sort-arrow">↕</span></th>
+              <th data-sort="lastTouched" class="sorted">Touched <span class="sort-arrow">↓</span></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="kanban" class="view">
+    <div class="kanban-view" id="kanbanBoard"></div>
+  </div>
+
+  <div id="gantt" class="view">
+    <div class="timeline-view">
+      <div class="timeline-controls">
+        <div class="timeline-nav">
+          <button data-range="14" class="active">2 Weeks</button>
+          <button data-range="28">4 Weeks</button>
+          <button data-range="56">8 Weeks</button>
+        </div>
+        <div class="timeline-nav">
+          <button id="navPrev">← Earlier</button>
+          <button id="navToday">Today</button>
+          <button id="navNext">Later →</button>
+        </div>
+        <span class="timeline-period" id="timelinePeriod"></span>
+      </div>
+      <div class="gantt-wrapper">
+        <div class="gantt-scroll" id="ganttScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = __DATA_PLACEHOLDER__;
+
+// ── State ──
+let currentSort = { key: 'lastTouched', dir: 'desc' };
+let currentFilter = 'all';
+let searchQuery = '';
+let timelineRange = 14;
+let timelineOffset = 0;
+
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ── Init ──
+document.getElementById('lastUpdated').textContent = DATA.lastUpdated;
+
+// Stat pills
+const sections = {};
+DATA.items.forEach(i => { sections[i.section] = (sections[i.section] || 0) + 1; });
+document.getElementById('statPills').innerHTML = Object.entries(sections).map(([s, c]) =>
+  `<span class="stat-pill"><span class="dot" style="background:var(--${s.toLowerCase()}-color)"></span><span class="count">${c}</span> ${s}</span>`
+).join('');
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.view).classList.add('active');
+  });
+});
+
+function fmt(name) {
+  return name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+// ── Table ──
+function getFiltered() {
+  return DATA.items.filter(item => {
+    const mf = currentFilter === 'all' || item.section.toLowerCase() === currentFilter;
+    const ms = !searchQuery || [item.name, item.summary, item.status].some(f => f.toLowerCase().includes(searchQuery));
+    return mf && ms;
+  });
+}
+
+function sorted(items) {
+  const { key, dir } = currentSort;
+  const d = dir === 'asc' ? 1 : -1;
+  return [...items].sort((a, b) => {
+    const va = (a[key] || '').toLowerCase(), vb = (b[key] || '').toLowerCase();
+    return va < vb ? -d : va > vb ? d : 0;
+  });
+}
+
+function renderTable() {
+  const items = sorted(getFiltered());
+  document.getElementById('tableBody').innerHTML = items.map(item => {
+    const urg = item.status.toLowerCase().includes('urgent');
+    const sec = item.section.toLowerCase();
+    return `<tr>
+      <td class="item-name ${sec}">${fmt(item.name)}</td>
+      <td class="item-summary">${item.summary}</td>
+      <td><span class="badge ${sec}">${item.section}</span></td>
+      <td class="status-cell ${urg ? 'urgent' : ''}">${item.status}</td>
+      <td class="date-cell">${item.lastTouched}</td>
+    </tr>`;
+  }).join('');
+}
+
+document.querySelectorAll('.table-view th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    currentSort = currentSort.key === key
+      ? { key, dir: currentSort.dir === 'asc' ? 'desc' : 'asc' }
+      : { key, dir: 'asc' };
+    document.querySelectorAll('.table-view th').forEach(h => {
+      h.classList.remove('sorted');
+      h.querySelector('.sort-arrow').textContent = '↕';
+    });
+    th.classList.add('sorted');
+    th.querySelector('.sort-arrow').textContent = currentSort.dir === 'asc' ? '↑' : '↓';
+    renderTable();
+  });
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.toLowerCase();
+  renderTable();
+});
+
+// ── Kanban ──
+function renderKanban() {
+  const cols = ['Active', 'Simmering', 'Parked', 'Archived', 'Resolved'];
+  document.getElementById('kanbanBoard').innerHTML = cols.map(section => {
+    const items = DATA.items.filter(i => i.section === section);
+    const cards = items.length ? items.map(item => {
+      const urg = item.status.toLowerCase().includes('urgent');
+      return `<div class="kanban-card">
+        <div class="card-title">${fmt(item.name)}</div>
+        <div class="card-summary">${item.summary}</div>
+        <div class="card-footer">
+          <span class="card-status ${urg ? 'urgent' : ''}">${item.status}</span>
+          <span class="card-date">${item.lastTouched}</span>
+        </div>
+      </div>`;
+    }).join('') : '<div class="kanban-empty">No items</div>';
+
+    return `<div class="kanban-column ${section.toLowerCase()}">
+      <div class="kanban-column-header">${section}<span class="count">${items.length}</span></div>
+      <div class="kanban-cards">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Timeline ──
+function parseDate(s) { return new Date(s + 'T12:00:00'); }
+
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+
+function dateStr(d) { return d.toISOString().slice(0, 10); }
+
+function parseDueDate(status) {
+  const m = status.match(/(?:due|by)\s+((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2})/i);
+  if (!m) {
+    const m2 = status.match(/workshop\s+~?\s*(\d{1,2})(?:st|nd|rd|th)?\s+week\s+of\s+(January|February|March|April|May|June|July|August|September|October|November|December)/i);
+    if (m2) return new Date(`${m2[2]} ${parseInt(m2[1]) * 7}, 2026`);
+    const m3 = status.match(/~?\s*(?:2nd|second)\s+week\s+of\s+(January|February|March|April|May|June|July|August|September|October|November|December)/i);
+    if (m3) return new Date(`${m3[1]} 14, 2026`);
+    return null;
+  }
+  return new Date(m[1] + ', 2026');
+}
+
+function renderGantt() {
+  const today = parseDate(DATA.lastUpdated);
+  const start = addDays(today, timelineOffset - 1);
+  const days = [];
+  for (let i = 0; i < timelineRange; i++) days.push(addDays(start, i));
+
+  const periodStart = `${MONTH_NAMES[days[0].getMonth()]} ${days[0].getDate()}`;
+  const periodEnd = `${MONTH_NAMES[days[days.length-1].getMonth()]} ${days[days.length-1].getDate()}`;
+  document.getElementById('timelinePeriod').textContent = `${periodStart} — ${periodEnd}`;
+
+  const todayStr = dateStr(today);
+
+  // Show any item with planning data, regardless of section
+  const planned = DATA.items.filter(i => i.plannedStart && i.durationDays);
+
+  // Column width — generous enough to read
+  const colWidth = Math.max(64, Math.floor((window.innerWidth - 360) / timelineRange));
+
+  let html = `<div class="gantt-header-row">
+    <div class="gantt-label-header">Plan</div>
+    <div class="gantt-dates-header">
+      ${days.map(d => {
+        const dow = d.getDay();
+        const isWeekend = dow === 0 || dow === 6;
+        const isToday = dateStr(d) === todayStr;
+        return `<div class="gantt-day-header ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}" style="min-width:${colWidth}px;flex:0 0 ${colWidth}px;">
+          <span class="day-name">${DAY_NAMES[dow]}</span>
+          <span class="day-num">${d.getDate()}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  if (!planned.length) {
+    html += `<div style="padding:40px;text-align:center;color:var(--text-dim);font-size:14px;">No items have planned dates yet.</div>`;
+  }
+
+  planned.forEach(item => {
+    const sec = item.section.toLowerCase();
+    const urg = item.status.toLowerCase().includes('urgent');
+    const pStart = parseDate(item.plannedStart);
+    const pEnd = addDays(pStart, item.durationDays - 1);
+    const due = item.dueDate ? parseDate(item.dueDate) : null;
+
+    html += `<div class="gantt-row">
+      <div class="gantt-row-label">
+        <div class="label-name ${sec}">${fmt(item.name)}</div>
+        <div class="label-status ${urg ? 'urgent' : ''}">${item.status}</div>
+      </div>
+      <div class="gantt-row-timeline">`;
+
+    days.forEach((d, i) => {
+      const dow = d.getDay();
+      const isWeekend = dow === 0 || dow === 6;
+      const isToday = dateStr(d) === todayStr;
+      const ds = dateStr(d);
+
+      const inBlock = d >= pStart && d <= pEnd;
+      const isBlockStart = inBlock && (i === 0 || dateStr(addDays(d, -1)) < dateStr(pStart));
+      const isBlockEnd = inBlock && (i === days.length - 1 || dateStr(addDays(d, 1)) > dateStr(pEnd));
+      const isDue = due && ds === dateStr(due);
+
+      let barHtml = '';
+      if (inBlock) {
+        // Continuous bar — no gaps. Rounded only on start/end edges.
+        const rL = isBlockStart ? '6px' : '0';
+        const rR = isBlockEnd ? '6px' : '0';
+        const bL = isBlockStart ? '2px' : '0';
+        const bR = isBlockEnd ? '2px' : '0';
+        barHtml = `<div style="position:absolute;top:50%;transform:translateY(-50%);left:${bL};right:${bR};height:30px;background:var(--${sec}-color);opacity:0.8;border-radius:${rL} ${rR} ${rR} ${rL};"></div>`;
+      }
+
+      let dueHtml = '';
+      if (isDue && !inBlock) {
+        dueHtml = `<div class="gantt-due-diamond" style="left:50%;top:50%;"></div>`;
+      } else if (isDue && inBlock) {
+        dueHtml = `<div style="position:absolute;top:5px;right:5px;width:9px;height:9px;background:var(--urgent);border-radius:2px;transform:rotate(45deg);z-index:4;box-shadow:0 0 6px rgba(255,102,116,0.4);"></div>`;
+      }
+
+      html += `<div class="gantt-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}" style="min-width:${colWidth}px;flex:0 0 ${colWidth}px;">${barHtml}${dueHtml}</div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  // Unscheduled items — shown below with no bars, just labels
+  const unplanned = DATA.items.filter(i => !i.plannedStart || !i.durationDays);
+  if (unplanned.length) {
+    // Divider row
+    html += `<div style="display:flex;border-bottom:1px solid var(--border-subtle);border-top:2px solid var(--border);">
+      <div style="flex:0 0 260px;padding:10px 20px;border-right:1px solid var(--border);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-dim);position:sticky;left:0;z-index:2;background:var(--surface2);">Unscheduled</div>
+      <div style="flex:1;display:flex;">
+        ${days.map(d => {
+          const dow = d.getDay();
+          const isWeekend = dow === 0 || dow === 6;
+          return `<div style="flex:0 0 ${colWidth}px;min-width:${colWidth}px;border-left:1px solid var(--border-subtle);${isWeekend ? 'background:rgba(255,255,255,0.01);' : ''}"></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+    unplanned.forEach(item => {
+      const sec = item.section.toLowerCase();
+      const urg = item.status.toLowerCase().includes('urgent');
+      html += `<div class="gantt-row" style="opacity:0.5;">
+        <div class="gantt-row-label">
+          <div class="label-name ${sec}">${fmt(item.name)}</div>
+          <div class="label-status ${urg ? 'urgent' : ''}">${item.status}</div>
+        </div>
+        <div class="gantt-row-timeline">
+          ${days.map(d => {
+            const dow = d.getDay();
+            const isWeekend = dow === 0 || dow === 6;
+            const isToday = dateStr(d) === todayStr;
+            return `<div class="gantt-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}" style="min-width:${colWidth}px;flex:0 0 ${colWidth}px;"></div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    });
+  }
+
+  document.getElementById('ganttScroll').innerHTML = html;
+}
+
+// Timeline controls
+document.querySelectorAll('.timeline-nav button[data-range]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.timeline-nav button[data-range]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    timelineRange = parseInt(btn.dataset.range);
+    renderGantt();
+  });
+});
+
+document.getElementById('navPrev').addEventListener('click', () => { timelineOffset -= Math.floor(timelineRange / 2); renderGantt(); });
+document.getElementById('navNext').addEventListener('click', () => { timelineOffset += Math.floor(timelineRange / 2); renderGantt(); });
+document.getElementById('navToday').addEventListener('click', () => { timelineOffset = 0; renderGantt(); });
+
+// ── Render ──
+renderTable();
+renderKanban();
+renderGantt();
+</script>
+</body>
+</html>
