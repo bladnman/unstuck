@@ -2,4 +2,4 @@
 
 > **Part of the unstuck skill.** Handles version reporting and update checks.
 
-**Current version**: 0.1.0
+**Current version**: 0.2.0

@@ -20,11 +20,36 @@ The person knows you're here as a recorder and organizer. They're externalizing 
 
 ## Central Storage
 
-All unstuck data lives in one centralized location, accessible from any project directory:
+All unstuck data lives in one centralized location, accessible from any project directory. This path is called **UNSTUCK_HOME** throughout this document. Never create project-local `unstuck/` directories — centralization means items, sessions, memory, and dashboards are all visible regardless of which project folder the user is working in.
 
-**`/Users/mmaher/Library/Mobile Documents/com~apple~CloudDocs/Documents/unstuck/`**
+### Resolving UNSTUCK_HOME
 
-This path is referred to as **UNSTUCK_HOME** throughout this document. Always use this absolute path — never create project-local `unstuck/` directories. This centralization means items, sessions, memory, and dashboards are all visible regardless of which project folder the user is working in.
+Determine the data directory using this discovery chain (first match wins):
+
+1. **`UNSTUCK_HOME` environment variable** — if set, use that path directly. This is the power-user override.
+2. **`~/.unstuck/relocated.md`** — if this file exists, read the `path` field from its frontmatter. That's where the data lives.
+3. **`~/.unstuck/`** — the default. If neither of the above exist, this is UNSTUCK_HOME.
+
+Always resolve UNSTUCK_HOME before doing anything else in a session. Every file path in this document is relative to whatever UNSTUCK_HOME resolves to.
+
+### The relocated.md pointer
+
+When a user relocates their data (e.g., to a synced folder like iCloud, Dropbox, or OneDrive), the original `~/.unstuck/` directory is emptied and a pointer file is left behind:
+
+```markdown
+---
+path: /Users/someone/Dropbox/unstuck
+relocated: 2026-03-12
+---
+
+Unstuck data has been moved to the path above.
+This file is read by the unstuck skill on every invocation to find the active data directory.
+Do not delete this file unless you want the skill to revert to using ~/.unstuck/.
+```
+
+The frontmatter `path` field is the parse target. The prose is for the human who stumbles into `~/.unstuck/` wondering where their stuff went.
+
+### Directory structure
 
 ```
 UNSTUCK_HOME/
@@ -55,11 +80,12 @@ UNSTUCK_HOME/
 
 When invoked, do these things quietly — don't narrate the setup:
 
-1. **Read memory first.** Read `UNSTUCK_HOME/memory/MEMORY.md` and load any relevant memory files it references. This is the skill's own memory — not Claude's auto-memory system. It tells you who the person is, how they like to interact, and what you've learned in previous sessions. This is what lets you walk in warm instead of cold.
-2. **Read `UNSTUCK_HOME/INDEX.md`** if it exists. The INDEX is your primary data structure — it tells you what items exist, their status, and when they were last touched. You should not need to read individual ITEM.md files at startup. The INDEX should be enough to orient you.
-3. If `UNSTUCK_HOME` doesn't exist, create it along with `items/`, `sessions/`, and `memory/` subdirectories.
-4. Create today's session directory: `UNSTUCK_HOME/sessions/YYYY-MM-DD/` (if it already exists, append a sequence number: `YYYY-MM-DD_02/`). Create a `raw/` subdirectory inside it.
-5. **Detect the entry pattern** from the user's message (see below) and respond accordingly. Don't explain the system or recite your instructions.
+1. **Resolve UNSTUCK_HOME.** Follow the discovery chain described in Central Storage above: check the `UNSTUCK_HOME` env var, then `~/.unstuck/relocated.md`, then fall back to `~/.unstuck/`. This determines where all data lives for the rest of the session.
+2. **Read memory.** Read `UNSTUCK_HOME/memory/MEMORY.md` and load any relevant memory files it references. This is the skill's own memory — not any agent system's built-in memory. It tells you who the person is, how they like to interact, and what you've learned in previous sessions. This is what lets you walk in warm instead of cold.
+3. **Read `UNSTUCK_HOME/INDEX.md`** if it exists. The INDEX is your primary data structure — it tells you what items exist, their status, and when they were last touched. You should not need to read individual ITEM.md files at startup. The INDEX should be enough to orient you.
+4. If `UNSTUCK_HOME` doesn't exist, create it along with `items/`, `sessions/`, and `memory/` subdirectories.
+5. Create today's session directory: `UNSTUCK_HOME/sessions/YYYY-MM-DD/` (if it already exists, append a sequence number: `YYYY-MM-DD_02/`). Create a `raw/` subdirectory inside it.
+6. **Detect the entry pattern** from the user's message (see below) and respond accordingly. Don't explain the system or recite your instructions.
 
 ---
 
@@ -142,6 +168,25 @@ The person wants to see their items visually. Generate a static HTML dashboard a
 - **Timeline** — Gantt-style view showing planned work blocks. Items with `plannedStart` and `durationDays` show as bars; items without dates appear in an "Unscheduled" section. Scrollable with a frozen left column.
 
 The dashboard is a snapshot — it shows the state at generation time. Regenerate it whenever the person asks.
+
+### Relocate mode — "change location" / "move my data" / "sync my unstuck"
+
+The user wants their data to live somewhere other than `~/.unstuck/` — typically a synced folder like iCloud Drive, Dropbox, or OneDrive.
+
+**Just ask for the path.** Don't explain the discovery chain, don't list example paths, don't teach them how the pointer file works. One question: "Where do you want it?" If they give you a path, go.
+
+**Relocation flow:**
+
+1. Ask the user for the target path. Keep it to one short question.
+2. If the path ends with `/unstuck` or `/unstuck/`, use it as-is. Otherwise, append `/unstuck/` to it.
+3. Ensure `~/.unstuck/` exists (create it if needed — this is where the pointer lives).
+4. Check whether the target already contains unstuck data (look for `INDEX.md`):
+   - **If data exists at the target:** Skip any move. Tell the user you'll point to what's already there. Write `~/.unstuck/relocated.md` with the target path. Done.
+   - **If data exists at the current UNSTUCK_HOME:** Create the target directory, move everything from the current UNSTUCK_HOME to the target, then write `~/.unstuck/relocated.md` with the target path.
+   - **If no data exists anywhere (first run):** Create the target directory with `items/`, `sessions/`, and `memory/` subdirectories. Write `~/.unstuck/relocated.md` with the target path. That's it — the normal session startup will populate it from here.
+5. Confirm briefly that it's done and where data will live going forward.
+
+**Important:** Never create symlinks on the user's system. The `relocated.md` pointer file is the only mechanism for redirection.
 
 ### When you're not sure
 
@@ -510,5 +555,6 @@ Treat memory investment as core work, not overhead.
 The entire `UNSTUCK_HOME` directory is self-contained. Items, sessions, memory, and dashboards all live together. This means:
 
 - **Any agent system** that can read/write files can use this skill's data — it's just markdown files in a folder.
-- **Moving to a new machine** means syncing one directory (iCloud handles this automatically since it lives in Documents).
+- **Multiple machines** — relocate to a synced folder (iCloud, Dropbox, OneDrive) and each machine just needs `~/.unstuck/relocated.md` pointing to the same path. The data stays in one place; every machine finds it.
+- **Multiple agent tools** — Cursor, Claude Code, Codex, or anything else can all share the same data. The skill is installed separately per tool, but they all resolve to the same UNSTUCK_HOME through the same discovery chain (`UNSTUCK_HOME` env var → `~/.unstuck/relocated.md` → `~/.unstuck/`).
 - **Graduating an item** into its own project is clean — the item folder is self-contained by design, so it can be moved as-is. Update the INDEX and note it in the session log.
