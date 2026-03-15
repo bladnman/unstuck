@@ -23,6 +23,7 @@ export function ItemDetailPanel({
 }: ItemDetailPanelProps) {
   const editorRef = useRef<Editor | null>(null);
   const [formState, setFormState] = useState<Partial<ItemDetail>>({});
+  const isShellOnly = isLoading && (!item?.document && !(item?.contextFiles.length));
 
   useEffect(() => {
     if (!item) {
@@ -67,6 +68,14 @@ export function ItemDetailPanel({
           This panel edits both the index metadata and the markdown living in the item folder.
         </p>
       </header>
+
+      {isLoading ? (
+        <div className={styles.loadingBanner}>
+          {isShellOnly
+            ? 'Loading markdown and context for the selected item…'
+            : 'Refreshing item detail…'}
+        </div>
+      ) : null}
 
       <div className={styles.grid}>
         <label className={styles.field}>
@@ -181,32 +190,42 @@ export function ItemDetailPanel({
         </button>
         <button
           className={styles.secondaryButton}
+          disabled={isShellOnly}
           onClick={() => {
             const document = editorRef.current?.getInstance().getMarkdown() || '';
             onSaveDocument(item.id, document);
           }}
           type="button"
-        >
+      >
           Save markdown
         </button>
       </div>
 
-      <Editor
-        initialEditType="wysiwyg"
-        initialValue={item.document}
-        previewStyle="vertical"
-        ref={editorRef}
-        usageStatistics={false}
-      />
+      {isShellOnly ? (
+        <div className={styles.loadingBody}>
+          The selected item is open. Its markdown and related context are still loading into this
+          surface.
+        </div>
+      ) : (
+        <>
+          <Editor
+            initialEditType="wysiwyg"
+            initialValue={item.document}
+            previewStyle="vertical"
+            ref={editorRef}
+            usageStatistics={false}
+          />
 
-      <div className={styles.contextList}>
-        {item.contextFiles.map((contextFile) => (
-          <article className={styles.contextCard} key={contextFile.path}>
-            <h3 className={styles.contextTitle}>{contextFile.name}</h3>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{contextFile.content}</ReactMarkdown>
-          </article>
-        ))}
-      </div>
+          <div className={styles.contextList}>
+            {item.contextFiles.map((contextFile) => (
+              <article className={styles.contextCard} key={contextFile.path}>
+                <h3 className={styles.contextTitle}>{contextFile.name}</h3>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{contextFile.content}</ReactMarkdown>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
     </section>
   );
 }

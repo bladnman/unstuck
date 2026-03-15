@@ -1,3 +1,5 @@
+import type { MouseEvent } from 'react';
+
 import { DashboardHeader } from '@/pages/DashboardPage/features/DashboardHeader/DashboardHeader';
 import { DashboardFilters } from '@/pages/DashboardPage/features/DashboardFilters/DashboardFilters';
 import { ActivityStrip } from '@/pages/DashboardPage/features/ActivityStrip/ActivityStrip';
@@ -13,6 +15,20 @@ import styles from './DashboardPage.module.css';
 
 export function DashboardPage() {
   const dashboardPage = useDashboardPage();
+  const detailSurfaceItem = dashboardPage.itemDetail || (
+    dashboardPage.selectedItem
+      ? {
+          ...dashboardPage.selectedItem,
+          document: '',
+          contextFiles: [],
+        }
+      : null
+  );
+  const isDetailOpen = dashboardPage.panelMode === 'details' && Boolean(detailSurfaceItem);
+
+  const stopOverlayClose = (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+  };
 
   return (
     <div className={styles.page}>
@@ -39,10 +55,7 @@ export function DashboardPage() {
                 <TableView
                   items={dashboardPage.visibleItems}
                   selectedItemId={dashboardPage.selectedItemId}
-                  onOpenItem={(itemId) => {
-                    dashboardPage.setSelectedItemId(itemId);
-                    dashboardPage.setPanelMode('details');
-                  }}
+                  onOpenItem={dashboardPage.openItemDetail}
                   onToggleResolved={(item) =>
                     dashboardPage.updateItem(item.id, {
                       state: item.state === 'resolved' ? 'active' : 'resolved',
@@ -54,10 +67,7 @@ export function DashboardPage() {
                 <BoardView
                   items={dashboardPage.visibleItems}
                   selectedItemId={dashboardPage.selectedItemId}
-                  onOpenItem={(itemId) => {
-                    dashboardPage.setSelectedItemId(itemId);
-                    dashboardPage.setPanelMode('details');
-                  }}
+                  onOpenItem={dashboardPage.openItemDetail}
                   onReorderItems={dashboardPage.updateManyItems}
                 />
               )}
@@ -66,10 +76,7 @@ export function DashboardPage() {
                   horizon={dashboardPage.filters.horizon}
                   items={dashboardPage.visibleItems}
                   selectedItemId={dashboardPage.selectedItemId}
-                  onOpenItem={(itemId) => {
-                    dashboardPage.setSelectedItemId(itemId);
-                    dashboardPage.setPanelMode('details');
-                  }}
+                  onOpenItem={dashboardPage.openItemDetail}
                   onScheduleItem={(itemId, patch) => dashboardPage.updateItem(itemId, patch)}
                 />
               )}
@@ -82,10 +89,7 @@ export function DashboardPage() {
                   onDurationChange={(itemId, durationDays) =>
                     dashboardPage.updateItem(itemId, { durationDays })
                   }
-                  onOpenItem={(itemId) => {
-                    dashboardPage.setSelectedItemId(itemId);
-                    dashboardPage.setPanelMode('details');
-                  }}
+                  onOpenItem={dashboardPage.openItemDetail}
                 />
               )}
             </div>
@@ -115,12 +119,37 @@ export function DashboardPage() {
           </div>
 
           {dashboardPage.panelMode === 'details' ? (
-            <ItemDetailPanel
-              item={dashboardPage.itemDetail}
-              isLoading={dashboardPage.isLoadingDetail}
-              onSaveDocument={dashboardPage.saveItemDocument}
-              onSaveMetadata={dashboardPage.updateItem}
-            />
+            <div className={`${styles.surface} ${styles.detailDock}`}>
+              <div>
+                <span className={styles.detailDockEyebrow}>Detail popup</span>
+                <h3 className={styles.detailDockTitle}>
+                  {dashboardPage.selectedItem ? dashboardPage.selectedItem.title : 'No item selected'}
+                </h3>
+                <p className={styles.detailDockCopy}>
+                  {dashboardPage.selectedItem
+                    ? 'Selecting a tile now opens a dedicated detail surface so the item is visible immediately instead of relying on the sidebar.'
+                    : 'Pick an item from any view to open its detail surface.'}
+                </p>
+              </div>
+              <div className={styles.detailDockActions}>
+                {dashboardPage.selectedItem ? (
+                  <button
+                    className={styles.detailDockButton}
+                    onClick={dashboardPage.closeItemDetail}
+                    type="button"
+                  >
+                    Close detail
+                  </button>
+                ) : null}
+                <button
+                  className={styles.detailDockButton}
+                  onClick={() => dashboardPage.setPanelMode('ai')}
+                  type="button"
+                >
+                  Show AI panel
+                </button>
+              </div>
+            </div>
           ) : (
             <AiPanel
               errorMessage={dashboardPage.aiErrorMessage}
@@ -132,14 +161,29 @@ export function DashboardPage() {
               onStartSession={dashboardPage.startAiSession}
             />
           )}
-
-          {!dashboardPage.itemDetail && dashboardPage.panelMode === 'details' ? (
-            <div className={`${styles.surface} ${styles.emptyRail}`}>
-              Pick an item from any view to inspect its markdown, notes, and planning fields.
-            </div>
-          ) : null}
         </div>
       </div>
+
+      {isDetailOpen && detailSurfaceItem ? (
+        <div className={styles.detailOverlayBackdrop} onClick={dashboardPage.closeItemDetail}>
+          <div className={styles.detailOverlayShell} onClick={stopOverlayClose}>
+            <button
+              aria-label="Close item detail"
+              className={styles.detailOverlayClose}
+              onClick={dashboardPage.closeItemDetail}
+              type="button"
+            >
+              Close
+            </button>
+            <ItemDetailPanel
+              item={detailSurfaceItem}
+              isLoading={dashboardPage.isLoadingDetail}
+              onSaveDocument={dashboardPage.saveItemDocument}
+              onSaveMetadata={dashboardPage.updateItem}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

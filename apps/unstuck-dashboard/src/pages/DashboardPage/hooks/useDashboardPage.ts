@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type {
   AiProvider,
@@ -64,6 +64,7 @@ export function useDashboardPage() {
   const [aiSession, setAiSession] = useState<AiSession | null>(null);
   const [isAiStreaming, setIsAiStreaming] = useState(false);
   const [aiErrorMessage, setAiErrorMessage] = useState('');
+  const detailRequestId = useRef(0);
 
   const refreshDashboard = async () => {
     try {
@@ -78,15 +79,40 @@ export function useDashboardPage() {
   };
 
   const loadItemDetail = async (itemId: string) => {
+    const requestId = detailRequestId.current + 1;
+    detailRequestId.current = requestId;
     setIsLoadingDetail(true);
+    setItemDetail((current) => (current?.id === itemId ? current : null));
     try {
       const detail = await getJson<ItemDetail>(`/api/items/${itemId}`);
+      if (detailRequestId.current !== requestId) {
+        return;
+      }
       setItemDetail(detail);
     } catch (error) {
+      if (detailRequestId.current !== requestId) {
+        return;
+      }
+
       setErrorMessage(error instanceof Error ? error.message : 'Unable to load item details');
     } finally {
-      setIsLoadingDetail(false);
+      if (detailRequestId.current === requestId) {
+        setIsLoadingDetail(false);
+      }
     }
+  };
+
+  const openItemDetail = (itemId: string) => {
+    setSelectedItemId(itemId);
+    setPanelMode('details');
+  };
+
+  const closeItemDetail = () => {
+    detailRequestId.current += 1;
+    setSelectedItemId(null);
+    setItemDetail(null);
+    setIsLoadingDetail(false);
+    setPanelMode('ai');
   };
 
   const updateItem = async (itemId: string, patch: Partial<UnstuckItem>) => {
@@ -133,8 +159,7 @@ export function useDashboardPage() {
       summary,
     });
     await refreshDashboard();
-    setSelectedItemId(created.id);
-    setPanelMode('details');
+    openItemDetail(created.id);
   };
 
   const startAiSession = async (providerId: string) => {
@@ -203,7 +228,9 @@ export function useDashboardPage() {
 
   useEffect(() => {
     if (!selectedItemId) {
+      detailRequestId.current += 1;
       setItemDetail(null);
+      setIsLoadingDetail(false);
       return;
     }
 
@@ -268,7 +295,8 @@ export function useDashboardPage() {
     visibleItems,
     selectedItem,
     selectedItemId,
-    setSelectedItemId,
+    openItemDetail,
+    closeItemDetail,
     itemDetail,
     isLoading,
     isLoadingDetail,

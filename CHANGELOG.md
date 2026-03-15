@@ -4,6 +4,15 @@ What's new, what's better, what's different. Most recent stuff on top.
 
 ---
 
+## 0.3.2 — The Detail Popup (2026-03-15)
+
+Picking an item is much harder to miss now. Details open in a dedicated surface, the selected item shows up immediately while richer content loads, and the old “maybe the sidebar updated somewhere” feeling is gone.
+
+- Moved item details into a modal-style surface instead of relying on the rail/sidebar to be visible enough
+- Made detail loading selection-aware so older fetches cannot overwrite a newer click
+- Added immediate selected-item shell rendering plus loading feedback while markdown and context hydrate
+- Kept the AI panel changes out of this patch so the separate AI-surface rethink can land on its own
+
 ## 0.3.1 — The Transcript Tamer (2026-03-15)
 
 The AI side panel is much less chaotic now. Streaming stays pinned to the latest activity, internal CLI noise gets pushed out of the main conversation, and shell work reads like separate steps instead of one mashed-up log blob.

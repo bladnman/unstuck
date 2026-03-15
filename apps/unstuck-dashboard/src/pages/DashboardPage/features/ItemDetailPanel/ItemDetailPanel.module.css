@@ -26,6 +26,16 @@
   line-height: 1.5;
 }
 
+.loadingBanner {
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(247, 185, 85, 0.2);
+  background: rgba(247, 185, 85, 0.08);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -83,6 +93,19 @@
   color: var(--text-secondary);
   padding: 12px 14px;
   font-weight: 700;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loadingBody {
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-soft);
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .contextList {

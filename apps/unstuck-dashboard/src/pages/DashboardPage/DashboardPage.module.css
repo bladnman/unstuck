@@ -64,6 +64,78 @@
   color: var(--text-secondary);
 }
 
+.detailDock {
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.detailDockEyebrow {
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detailDockTitle {
+  margin: 10px 0 8px;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.detailDockCopy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.detailDockActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.detailDockButton {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(8, 11, 18, 0.74);
+  color: var(--text-primary);
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.detailOverlayBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-8);
+  background: rgba(4, 8, 14, 0.72);
+  backdrop-filter: blur(10px);
+  overflow-y: auto;
+}
+
+.detailOverlayShell {
+  position: relative;
+  width: min(1120px, 100%);
+  margin: auto 0;
+}
+
+.detailOverlayClose {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 1;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(8, 11, 18, 0.82);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
 @media (max-width: 1380px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
@@ -71,5 +143,16 @@
 
   .rail {
     position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .detailOverlayBackdrop {
+    padding: var(--space-4);
+  }
+
+  .detailOverlayClose {
+    top: 12px;
+    right: 12px;
   }
 }
