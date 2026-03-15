@@ -92,8 +92,23 @@ export interface AiProvider {
 export interface AiTranscriptEntry {
   id: string;
   role: 'system' | 'user' | 'assistant';
+  kind: 'message' | 'command' | 'error';
+  label?: string;
   content: string;
   createdAt: string;
+  updatedAt?: string;
+  command?: string;
+  status?: string;
+  exitCode?: number | null;
+}
+
+export interface AiSessionNotice {
+  id: string;
+  label: string;
+  detail: string;
+  count: number;
+  latestAt: string;
+  lastMessage: string;
 }
 
 export interface AiSession {
@@ -103,6 +118,7 @@ export interface AiSession {
   startedAt: string;
   status: string;
   transcript: AiTranscriptEntry[];
+  notices: AiSessionNotice[];
 }
 
 export interface DashboardFilters {

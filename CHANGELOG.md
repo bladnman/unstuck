@@ -4,6 +4,15 @@ What's new, what's better, what's different. Most recent stuff on top.
 
 ---
 
+## 0.3.1 — The Transcript Tamer (2026-03-15)
+
+The AI side panel is much less chaotic now. Streaming stays pinned to the latest activity, internal CLI noise gets pushed out of the main conversation, and shell work reads like separate steps instead of one mashed-up log blob.
+
+- Switched Codex session capture to structured JSON events so assistant messages and commands land as distinct transcript entries
+- Hid repeated duplicate-tool and shell snapshot warnings behind compact notice pills instead of dumping them into the visible chat
+- Added stick-to-bottom streaming behavior unless you intentionally scroll away
+- Styled command blocks and capped their visible output so startup/tool chatter stops overwhelming the actual answer
+
 ## 0.3.0 — The Control Room (2026-03-15)
 
 Unstuck has a real control surface now. The system reads from a structured canonical index, the dashboard can act on live data, and the skill got stricter about catching ideas first so the important stuff lands before it slips away.
