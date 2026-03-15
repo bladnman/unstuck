@@ -43,7 +43,7 @@ export function DashboardHeader({
           </div>
         </div>
         <button className={styles.actionButton} onClick={onOpenAiPanel} type="button">
-          Open AI side panel
+          Open AI overlay
         </button>
       </div>
     </header>

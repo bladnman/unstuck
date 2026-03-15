@@ -4,6 +4,15 @@ What's new, what's better, what's different. Most recent stuff on top.
 
 ---
 
+## 0.3.3 — The Roomier Chat (2026-03-15)
+
+The AI assistant is no longer wedged into the rail. It opens in a larger overlay now, which gives the conversation space to breathe without undoing the transcript cleanup work that landed just before it.
+
+- Moved the full AI chat surface out of the rail and into a dedicated overlay panel
+- Left the rail as a lighter launch/status dock instead of the primary conversation container
+- Updated the dashboard header call-to-action to match the new overlay behavior
+- Kept transcript/session behavior unchanged so this patch stays about layout room, not chat internals
+
 ## 0.3.2 — The Detail Popup (2026-03-15)
 
 Picking an item is much harder to miss now. Details open in a dedicated surface, the selected item shows up immediately while richer content loads, and the old “maybe the sidebar updated somewhere” feeling is gone.

@@ -25,6 +25,7 @@ export function DashboardPage() {
       : null
   );
   const isDetailOpen = dashboardPage.panelMode === 'details' && Boolean(detailSurfaceItem);
+  const isAiOpen = dashboardPage.panelMode === 'ai';
 
   const stopOverlayClose = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -151,15 +152,25 @@ export function DashboardPage() {
               </div>
             </div>
           ) : (
-            <AiPanel
-              errorMessage={dashboardPage.aiErrorMessage}
-              currentItem={dashboardPage.selectedItem}
-              isStreaming={dashboardPage.isAiStreaming}
-              providers={dashboardPage.providers}
-              session={dashboardPage.aiSession}
-              onSendMessage={dashboardPage.sendAiMessage}
-              onStartSession={dashboardPage.startAiSession}
-            />
+            <div className={`${styles.surface} ${styles.detailDock}`}>
+              <div>
+                <span className={styles.detailDockEyebrow}>AI overlay</span>
+                <h3 className={styles.detailDockTitle}>Workspace assistant</h3>
+                <p className={styles.detailDockCopy}>
+                  The AI conversation now opens in a roomier overlay so transcript activity,
+                  commands, and selected-item context are easier to follow than in the rail.
+                </p>
+              </div>
+              <div className={styles.detailDockActions}>
+                <button
+                  className={styles.detailDockButton}
+                  onClick={() => dashboardPage.setPanelMode('details')}
+                  type="button"
+                >
+                  Close AI
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -180,6 +191,30 @@ export function DashboardPage() {
               isLoading={dashboardPage.isLoadingDetail}
               onSaveDocument={dashboardPage.saveItemDocument}
               onSaveMetadata={dashboardPage.updateItem}
+            />
+          </div>
+        </div>
+      ) : null}
+
+      {isAiOpen ? (
+        <div className={styles.aiOverlayBackdrop} onClick={() => dashboardPage.setPanelMode('details')}>
+          <div className={styles.aiOverlayShell} onClick={stopOverlayClose}>
+            <button
+              aria-label="Close AI overlay"
+              className={styles.detailOverlayClose}
+              onClick={() => dashboardPage.setPanelMode('details')}
+              type="button"
+            >
+              Close
+            </button>
+            <AiPanel
+              errorMessage={dashboardPage.aiErrorMessage}
+              currentItem={dashboardPage.selectedItem}
+              isStreaming={dashboardPage.isAiStreaming}
+              providers={dashboardPage.providers}
+              session={dashboardPage.aiSession}
+              onSendMessage={dashboardPage.sendAiMessage}
+              onStartSession={dashboardPage.startAiSession}
             />
           </div>
         </div>

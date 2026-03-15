@@ -2,7 +2,7 @@
 
 > **Part of the unstuck skill.** Handles version reporting and update checks.
 
-**Current version**: 0.3.2
+**Current version**: 0.3.3
 
 When the user asks for `/unstuck version`, use the version number on the line above as the skill version.
 

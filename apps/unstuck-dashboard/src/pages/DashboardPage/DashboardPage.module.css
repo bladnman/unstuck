@@ -136,6 +136,24 @@
   font-weight: 700;
 }
 
+.aiOverlayBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-8);
+  background: rgba(4, 8, 14, 0.64);
+  backdrop-filter: blur(10px);
+  overflow-y: auto;
+}
+
+.aiOverlayShell {
+  position: relative;
+  width: min(980px, 100%);
+  margin: auto 0 auto auto;
+}
+
 @media (max-width: 1380px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
@@ -149,6 +167,15 @@
 @media (max-width: 720px) {
   .detailOverlayBackdrop {
     padding: var(--space-4);
+  }
+
+  .aiOverlayBackdrop {
+    padding: var(--space-4);
+    justify-content: center;
+  }
+
+  .aiOverlayShell {
+    margin: auto 0;
   }
 
   .detailOverlayClose {
