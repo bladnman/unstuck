@@ -1,6 +1,6 @@
-# Quarterly Review Prep
+# Quarterly review prep
 
-> Q1 engineering review due next week. Need to pull together metrics but not sure where they live since the dashboard switch.
+> Q1 review due next week, blocked on finding metrics in new dashboard
 
 ## Understanding
 
@@ -8,7 +8,7 @@ The quarterly review is due next week and Sarah keeps asking about it. The main 
 
 ## Status
 
-Urgent. Due next week. Blocked on locating metrics in the new dashboard system.
+Urgent
 
 ## Connections
 
@@ -17,3 +17,8 @@ Urgent. Due next week. Blocked on locating metrics in the new dashboard system.
 ## Update Log
 
 - 2026-03-10: Initial capture. Core blocker identified (dashboard migration lost the metrics location). Emotional weight: avoidance pattern.
+
+## Planning
+
+- Planned start: 2026-03-21
+- Working duration: 10 days

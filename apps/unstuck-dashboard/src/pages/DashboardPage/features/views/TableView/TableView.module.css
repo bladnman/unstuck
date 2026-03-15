@@ -1,0 +1,75 @@
+.tableWrap {
+  overflow: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.head {
+  background: rgba(8, 11, 18, 0.82);
+}
+
+.headCell {
+  padding: 14px 16px;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.row {
+  border-top: 1px solid var(--border-soft);
+}
+
+.row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.selected {
+  background: rgba(127, 152, 255, 0.08);
+}
+
+.cell {
+  padding: 16px;
+  vertical-align: top;
+  color: var(--text-secondary);
+}
+
+.itemButton {
+  display: inline-block;
+  border: none;
+  background: none;
+  color: var(--accent-primary);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0;
+  text-align: left;
+}
+
+.summary {
+  max-width: 480px;
+  line-height: 1.55;
+}
+
+.status {
+  display: inline-block;
+  max-width: 240px;
+  line-height: 1.45;
+}
+
+.resolveButton {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(8, 11, 18, 0.74);
+  color: var(--text-secondary);
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}

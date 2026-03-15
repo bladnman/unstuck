@@ -4,6 +4,15 @@ What's new, what's better, what's different. Most recent stuff on top.
 
 ---
 
+## 0.3.0 — The Control Room (2026-03-15)
+
+Unstuck has a real control surface now. The system reads from a structured canonical index, the dashboard can act on live data, and the skill got stricter about catching ideas first so the important stuff lands before it slips away.
+
+- Added `index.json` as the canonical system index and treated dashboard artifacts as derived views
+- Added the server-backed `unstuck-dashboard` app for browsing, editing, and filtering live item data
+- Added queue and sync scripts for staged ingest, single-writer index updates, and dashboard refreshes
+- Updated the skill, docs, and eval fixtures for capture-first behavior and now-first planning windows
+
 ## 0.2.0 — The Nomad (2026-03-12)
 
 Your data can live anywhere now. The skill resolves its data directory through a discovery chain — env var, pointer file, or default — so you can relocate to iCloud, Dropbox, or wherever and every machine finds it. Just say "move my data" and point it at a path.

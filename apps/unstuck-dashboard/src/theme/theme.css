@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  color-scheme: dark;
+  --bg-base: #080b12;
+  --bg-panel: #131925;
+  --bg-panel-raised: #1a2232;
+  --bg-panel-soft: #20293a;
+  --bg-elevated: #0d1320;
+  --border-strong: #293347;
+  --border-soft: #20293a;
+  --text-primary: #edf2fb;
+  --text-secondary: #a6b1c7;
+  --text-dim: #74809a;
+  --accent-primary: #7f98ff;
+  --accent-secondary: #6be4bc;
+  --accent-warm: #f7b955;
+  --danger: #ff6d7a;
+  --surface-active: rgba(127, 152, 255, 0.14);
+  --surface-success: rgba(107, 228, 188, 0.14);
+  --surface-warm: rgba(247, 185, 85, 0.14);
+  --surface-danger: rgba(255, 109, 122, 0.14);
+  --shadow-strong: 0 24px 64px rgba(1, 5, 14, 0.45);
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(127, 152, 255, 0.12), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(107, 228, 188, 0.08), transparent 28%),
+    var(--bg-base);
+  color: var(--text-primary);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.tui-editor-defaultUI {
+  border: 1px solid var(--border-strong) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-panel) !important;
+}
+
+.tui-editor-defaultUI-toolbar {
+  background: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+}
+
+.tui-editor-contents {
+  color: var(--text-primary) !important;
+}
+
+.tui-editor-md-container,
+.toastui-editor-md-preview {
+  background: var(--bg-panel) !important;
+}

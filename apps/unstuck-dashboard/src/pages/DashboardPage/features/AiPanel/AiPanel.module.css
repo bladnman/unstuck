@@ -1,0 +1,119 @@
+.panel {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
+  background: linear-gradient(180deg, rgba(19, 25, 37, 0.98), rgba(12, 17, 28, 0.98));
+  box-shadow: var(--shadow-strong);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.header {
+  display: grid;
+  gap: 8px;
+}
+
+.title {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -0.04em;
+}
+
+.subcopy {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.controls {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.select,
+.textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: rgba(8, 11, 18, 0.74);
+  color: var(--text-primary);
+}
+
+.textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.buttonRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.button,
+.secondaryButton {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.button {
+  background: var(--surface-active);
+  color: var(--text-primary);
+}
+
+.secondaryButton {
+  background: rgba(8, 11, 18, 0.72);
+  color: var(--text-secondary);
+}
+
+.transcript {
+  display: grid;
+  gap: var(--space-3);
+  max-height: 460px;
+  overflow: auto;
+  padding-right: var(--space-2);
+}
+
+.message {
+  padding: var(--space-4);
+  border-radius: 16px;
+  border: 1px solid var(--border-soft);
+  background: rgba(8, 11, 18, 0.72);
+}
+
+.user {
+  border-color: rgba(127, 152, 255, 0.28);
+}
+
+.assistant {
+  border-color: rgba(107, 228, 188, 0.28);
+}
+
+.system {
+  border-color: rgba(247, 185, 85, 0.28);
+}
+
+.messageLabel {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.streaming {
+  color: var(--accent-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.45;
+}

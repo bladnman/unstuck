@@ -1,6 +1,6 @@
-# Marcus Departure Concern
+# Marcus departure concern
 
-> Found out Marcus might be leaving. He's the only one who understands the billing system and losing him would be a serious problem.
+> Worried Marcus may be leaving, he's the only one who knows the billing system
 
 ## Understanding
 
@@ -8,7 +8,7 @@ Overheard Marcus on a call with a recruiter. Nothing official yet, but it's been
 
 ## Status
 
-Anxiety. No action taken. Unclear how to approach the situation.
+Anxiety
 
 ## Connections
 
@@ -17,3 +17,8 @@ Anxiety. No action taken. Unclear how to approach the situation.
 ## Update Log
 
 - 2026-03-10: Initial capture. Discovered via overheard recruiter call. Emotional and practical dimensions noted.
+
+## Planning
+
+- Planned start: 2026-03-20
+- Working duration: 1 day

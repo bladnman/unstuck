@@ -1,6 +1,6 @@
 # Learn Rust
 
-> Want to learn Rust. Signed up for Rustlings three months ago. Haven't touched it.
+> Want to learn Rust, signed up for Rustlings 3 months ago, haven't started
 
 ## Understanding
 
@@ -8,7 +8,7 @@ This has been a desire for about two years. Keeps not happening because urgent t
 
 ## Status
 
-Simmering. No active progress. Recurring desire.
+Simmering
 
 ## Connections
 
@@ -17,3 +17,8 @@ Simmering. No active progress. Recurring desire.
 ## Update Log
 
 - 2026-03-10: Initial capture. Two-year desire, Rustlings signup 3 months ago, pattern of urgency crowding it out.
+
+## Planning
+
+- Planned start: 2026-03-17
+- Working duration: 4 days

@@ -1,0 +1,30 @@
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--radius-md);
+  background: rgba(12, 17, 28, 0.9);
+  border: 1px solid var(--border-soft);
+}
+
+.button {
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-dim);
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.button:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.active {
+  color: var(--text-primary);
+  background: var(--surface-active);
+}

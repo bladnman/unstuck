@@ -92,6 +92,303 @@
     color: var(--text-dim);
   }
 
+  /* ── Recent Writes ── */
+  .activity-strip {
+    padding: 18px 36px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .activity-card {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    min-height: 138px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+
+  .activity-card.primary {
+    background:
+      radial-gradient(circle at top right, rgba(123, 156, 255, 0.12), transparent 40%),
+      var(--surface);
+  }
+
+  .activity-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .activity-kicker {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+
+  .activity-meta-pill {
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-secondary);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .activity-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .activity-summary {
+    color: var(--text-secondary);
+    line-height: 1.45;
+    font-size: 14px;
+  }
+
+  .activity-footer {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .activity-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .activity-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .activity-list-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .activity-list-copy {
+    min-width: 0;
+  }
+
+  .activity-list-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .activity-list-desc {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .activity-list-date {
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .now-list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .now-item {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .now-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .now-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .now-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 6px;
+  }
+
+  .now-empty {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 1180px) {
+    .activity-strip {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Day View ── */
+  .day-view {
+    padding: 24px;
+    display: grid;
+    gap: 18px;
+  }
+
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .day-section {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .day-section-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .day-section-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.2px;
+  }
+
+  .day-section-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .day-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .day-column {
+    padding: 14px 12px 12px;
+    border-right: 1px solid var(--border-subtle);
+    min-height: 220px;
+  }
+
+  .day-column:last-child {
+    border-right: none;
+  }
+
+  .day-column-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    padding: 11px 12px;
+    margin-bottom: 10px;
+  }
+
+  .day-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .day-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .day-card-summary {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .day-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .day-empty {
+    color: var(--text-dim);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .day-view-note {
+    padding: 14px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 1100px) {
+    .day-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .day-columns {
+      grid-template-columns: 1fr;
+    }
+
+    .day-column {
+      border-right: none;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .day-column:last-child {
+      border-bottom: none;
+    }
+  }
+
   /* ── Tabs ── */
   .tabs {
     display: flex;
@@ -690,9 +987,12 @@
   </div>
 </div>
 
+<div class="activity-strip" id="activityStrip"></div>
+
 <div class="tabs">
   <button class="tab active" data-view="table">Table</button>
   <button class="tab" data-view="kanban">Board</button>
+  <button class="tab" data-view="day">Day</button>
   <button class="tab" data-view="gantt">Timeline</button>
 </div>
 
@@ -730,6 +1030,13 @@
     <div class="kanban-view" id="kanbanBoard"></div>
   </div>
 
+  <div id="day" class="view">
+    <div class="day-view">
+      <div class="day-view-note">Use this when the weekly timeline is too coarse. It shows short-horizon items as anchors, flexible work, and optional choices for today and tomorrow.</div>
+      <div class="day-grid" id="dayPlan"></div>
+    </div>
+  </div>
+
   <div id="gantt" class="view">
     <div class="timeline-view">
       <div class="timeline-controls">
@@ -752,8 +1059,75 @@
   </div>
 </div>
 
+<script src="./dashboard-data.js"></script>
+<script id="embedded-data" type="application/json">__DATA_PLACEHOLDER__</script>
 <script>
-const DATA = __DATA_PLACEHOLDER__;
+function titleCaseState(value) {
+  if (!value) return 'Uncategorized';
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}
+
+function slugFromTitle(title) {
+  return (title || 'untitled')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function normalizeData(raw) {
+  const items = (raw.items || []).map(item => {
+    const section = item.section || titleCaseState(item.state);
+    const name = item.name || item.id || slugFromTitle(item.title);
+    return {
+      ...item,
+      name,
+      title: item.title || null,
+      state: item.state || section.toLowerCase(),
+      section,
+    };
+  });
+
+  return {
+    lastUpdated: raw.lastUpdated || '',
+    items,
+    dashboard: raw.dashboard || {
+      sessionCount: 0,
+      memoryCount: 0,
+      recentSessions: [],
+      recentMemory: [],
+    },
+  };
+}
+
+function getEmbeddedData() {
+  const el = document.getElementById('embedded-data');
+  if (!el) return null;
+  const raw = el.textContent.trim();
+  if (!raw || raw === '__DATA_PLACEHOLDER__') return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+async function loadData() {
+  if (location.protocol !== 'file:') {
+    try {
+      const response = await fetch('./index.json', { cache: 'no-store' });
+      if (response.ok) return normalizeData(await response.json());
+    } catch {}
+  }
+
+  if (window.UNSTUCK_DATA) return normalizeData(window.UNSTUCK_DATA);
+
+  const embedded = getEmbeddedData();
+  if (embedded) return normalizeData(embedded);
+
+  return normalizeData({ lastUpdated: '', items: [] });
+}
+
+let DATA = normalizeData({ lastUpdated: '', items: [] });
 
 // ── State ──
 let currentSort = { key: 'lastTouched', dir: 'desc' };
@@ -765,23 +1139,19 @@ let timelineOffset = 0;
 const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// ── Init ──
-document.getElementById('lastUpdated').textContent = DATA.lastUpdated;
-
-// Stat pills
-const sections = {};
-DATA.items.forEach(i => { sections[i.section] = (sections[i.section] || 0) + 1; });
-document.getElementById('statPills').innerHTML = Object.entries(sections).map(([s, c]) =>
-  `<span class="stat-pill"><span class="dot" style="background:var(--${s.toLowerCase()}-color)"></span><span class="count">${c}</span> ${s}</span>`
-).join('');
-
 // Tabs
+function setActiveView(viewName) {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.view === viewName);
+  });
+  document.querySelectorAll('.view').forEach(view => {
+    view.classList.toggle('active', view.id === viewName);
+  });
+}
+
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(tab.dataset.view).classList.add('active');
+    setActiveView(tab.dataset.view);
   });
 });
 
@@ -789,11 +1159,296 @@ function fmt(name) {
   return name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
+function displayName(item) {
+  return item.title || fmt(item.name);
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function init() {
+  document.getElementById('lastUpdated').textContent = DATA.lastUpdated || 'No index data loaded';
+
+  const sections = {};
+  DATA.items.forEach(i => { sections[i.section] = (sections[i.section] || 0) + 1; });
+  const statPills = Object.entries(sections).map(([s, c]) =>
+    `<span class="stat-pill"><span class="dot" style="background:var(--${s.toLowerCase()}-color)"></span><span class="count">${c}</span> ${s}</span>`
+  ).join('');
+  document.getElementById('statPills').innerHTML = statPills || '<span class="stat-pill"><span class="count">0</span> items</span>';
+  renderActivityStrip();
+}
+
+function toDateKey(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || '')) ? value : '';
+}
+
+function addDaysIso(dateString, days) {
+  const d = new Date(`${dateString}T12:00:00`);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function getNowItems() {
+  return DATA.items
+    .filter(item => item.state === 'active' && item.ephemeral)
+    .sort((a, b) => {
+      const aDate = toDateKey(a.expiresOn || a.dueDate || a.plannedStart);
+      const bDate = toDateKey(b.expiresOn || b.dueDate || b.plannedStart);
+      if (aDate && bDate && aDate !== bDate) return aDate < bDate ? -1 : 1;
+      if (aDate && !bDate) return -1;
+      if (!aDate && bDate) return 1;
+      return displayName(a).localeCompare(displayName(b));
+    })
+    .slice(0, 5);
+}
+
+function horizonLabel(item) {
+  const key = toDateKey(item.expiresOn || item.dueDate || item.plannedStart);
+  if (!key || !DATA.lastUpdated) return key || 'open';
+  if (key === DATA.lastUpdated) return 'today';
+  if (key === addDaysIso(DATA.lastUpdated, 1)) return 'tomorrow';
+  return key;
+}
+
+function dayKeyForItem(item) {
+  return toDateKey(item.expiresOn || item.dueDate || item.plannedStart);
+}
+
+function hasImmediateDayItems() {
+  const today = DATA.lastUpdated;
+  if (!today) return false;
+  const tomorrow = addDaysIso(today, 1);
+  return DATA.items.some(item => {
+    if (!item.ephemeral) return false;
+    const key = dayKeyForItem(item);
+    return key === today || key === tomorrow;
+  });
+}
+
+function formatHumanDate(dateString) {
+  if (!dateString) return 'No date';
+  const d = new Date(`${dateString}T12:00:00`);
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
+}
+
+function minutesLabel(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? `${n}m` : '';
+}
+
+function timeSortValue(item) {
+  const value = item.fixedStartTime || item.preferredStartTime || item.windowStartTime || item.earliestStartTime || '';
+  return value;
+}
+
+function sortDayItems(items) {
+  return [...items].sort((a, b) => {
+    const aTime = timeSortValue(a);
+    const bTime = timeSortValue(b);
+    if (aTime && bTime && aTime !== bTime) return aTime < bTime ? -1 : 1;
+    if (aTime && !bTime) return -1;
+    if (!aTime && bTime) return 1;
+    return displayName(a).localeCompare(displayName(b));
+  });
+}
+
+function dayMetaBits(item) {
+  const bits = [];
+  const minutes = minutesLabel(item.durationMinutes);
+  if (minutes) bits.push(minutes);
+
+  if (item.fixedStartTime) {
+    bits.push(item.fixedStartTime);
+  } else if (item.preferredStartTime) {
+    bits.push(`pref ${item.preferredStartTime}`);
+  }
+
+  const windowStart = item.windowStartTime || item.earliestStartTime;
+  const windowEnd = item.windowEndTime || item.latestEndTime;
+  if (!item.fixedStartTime && windowStart && windowEnd) {
+    bits.push(`${windowStart}-${windowEnd}`);
+  } else if (!item.fixedStartTime && windowStart) {
+    bits.push(`after ${windowStart}`);
+  }
+
+  if (Array.isArray(item.candidateTimes) && item.candidateTimes.length) {
+    bits.push(item.candidateTimes.join(' | '));
+  }
+
+  if (item.status) bits.push(item.status);
+  return bits;
+}
+
+function renderDayCard(item) {
+  return `<div class="day-card">
+    <div class="day-card-title">${escapeHtml(displayName(item))}</div>
+    <div class="day-card-summary">${escapeHtml(item.summary || item.statusDetail || item.status || '')}</div>
+    <div class="day-card-meta">
+      ${dayMetaBits(item).map(bit => `<span>${escapeHtml(bit)}</span>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderDayColumn(items, label) {
+  if (!items.length) {
+    return `<div class="day-column">
+      <div class="day-column-label">${label}</div>
+      <div class="day-empty">Nothing currently mapped here.</div>
+    </div>`;
+  }
+
+  return `<div class="day-column">
+    <div class="day-column-label">${label}</div>
+    ${sortDayItems(items).map(renderDayCard).join('')}
+  </div>`;
+}
+
+function renderDaySection(dateString, label) {
+  const items = DATA.items.filter(item => item.ephemeral && dayKeyForItem(item) === dateString);
+  const anchors = items.filter(item => item.planDisposition === 'anchor');
+  const flex = items.filter(item => !item.planDisposition || item.planDisposition === 'flex');
+  const options = items.filter(item => item.planDisposition === 'option');
+
+  return `<div class="day-section">
+    <div class="day-section-header">
+      <div class="day-section-title">${label}</div>
+      <div class="day-section-subtitle">${formatHumanDate(dateString)} · ${items.length} short-horizon items</div>
+    </div>
+    <div class="day-columns">
+      ${renderDayColumn(anchors, 'Anchors')}
+      ${renderDayColumn(flex, 'Flexible')}
+      ${renderDayColumn(options, 'Options')}
+    </div>
+  </div>`;
+}
+
+function renderActivityStrip() {
+  const container = document.getElementById('activityStrip');
+  const dash = DATA.dashboard || {};
+  const sessions = dash.recentSessions || [];
+  const memory = dash.recentMemory || [];
+  const nowItems = getNowItems();
+  const latestSession = sessions[0];
+
+  const nowCard = nowItems.length ? `
+    <div class="activity-card primary">
+      <div class="activity-card-header">
+        <div class="activity-kicker">Now Items</div>
+        <div class="activity-meta-pill">${nowItems.length} visible now</div>
+      </div>
+      <div class="activity-title">Transient things that matter right now</div>
+      <div class="now-list">
+        ${nowItems.map(item => `
+          <div class="now-item">
+            <div class="now-item-title">${escapeHtml(displayName(item))}</div>
+            <div class="activity-list-desc">${escapeHtml(item.summary || item.status || '')}</div>
+            <div class="now-item-meta">
+              <span>${escapeHtml(horizonLabel(item))}</span>
+              <span>${escapeHtml(item.status || '')}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  ` : `
+    <div class="activity-card primary">
+      <div class="activity-card-header">
+        <div class="activity-kicker">Now Items</div>
+        <div class="activity-meta-pill">0 visible now</div>
+      </div>
+      <div class="activity-title">No transient now-items yet</div>
+      <div class="now-empty">When you drop in a set of today-only or tomorrow-only things, they should show up here as dated items instead of disappearing into a session summary.</div>
+    </div>
+  `;
+
+  const sessionCard = latestSession ? `
+    <div class="activity-card">
+      <div class="activity-card-header">
+        <div class="activity-kicker">Latest Session Write</div>
+        <div class="activity-meta-pill">${dash.sessionCount || sessions.length} sessions</div>
+      </div>
+      <div class="activity-title">${escapeHtml(latestSession.id)}</div>
+      <div class="activity-summary">${escapeHtml(latestSession.summary || 'No session summary yet.')}</div>
+      <div class="activity-footer">
+        <span>${latestSession.itemsTouchedCount || 0} items</span>
+        <span>${latestSession.rawInputCount || 0} raw inputs</span>
+        <span>${escapeHtml(latestSession.updatedAt || '')}</span>
+      </div>
+    </div>
+  ` : `
+    <div class="activity-card">
+      <div class="activity-card-header">
+        <div class="activity-kicker">Latest Session Write</div>
+        <div class="activity-meta-pill">0 sessions</div>
+      </div>
+      <div class="activity-title">No session log yet</div>
+      <div class="activity-summary">Session writes will show up here so recent work is visible even when it lands outside the item board.</div>
+    </div>
+  `;
+
+  const memoryItems = memory.length ? memory.slice(0, 4).map(entry => `
+    <div class="activity-list-item">
+      <div class="activity-list-copy">
+        <div class="activity-list-title">${escapeHtml(entry.title || entry.id)}</div>
+        <div class="activity-list-desc">${escapeHtml(entry.description || 'Memory file updated')}</div>
+      </div>
+      <div class="activity-list-date">${escapeHtml(entry.updatedAt || '')}</div>
+    </div>
+  `).join('') : `
+    <div class="activity-list-item">
+      <div class="activity-list-copy">
+        <div class="activity-list-title">No recent memory writes</div>
+        <div class="activity-list-desc">When memory files are updated, they will appear here.</div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = `
+    ${nowCard}
+    ${sessionCard}
+    <div class="activity-card">
+      <div class="activity-card-header">
+        <div class="activity-kicker">Recent Memory Writes</div>
+        <div class="activity-meta-pill">${dash.memoryCount || memory.length} memory files</div>
+      </div>
+      <div class="activity-list">${memoryItems}</div>
+    </div>
+  `;
+}
+
+function renderDayPlan() {
+  const today = DATA.lastUpdated;
+  const tomorrow = today ? addDaysIso(today, 1) : '';
+  const html = [
+    today ? renderDaySection(today, 'Today') : '',
+    tomorrow ? renderDaySection(tomorrow, 'Tomorrow') : '',
+  ].filter(Boolean).join('');
+
+  document.getElementById('dayPlan').innerHTML = html || '<div class="day-empty">No day-scale items found.</div>';
+}
+
 // ── Table ──
 function getFiltered() {
   return DATA.items.filter(item => {
     const mf = currentFilter === 'all' || item.section.toLowerCase() === currentFilter;
-    const ms = !searchQuery || [item.name, item.summary, item.status].some(f => f.toLowerCase().includes(searchQuery));
+    const haystack = [
+      item.name,
+      item.title,
+      item.summary,
+      item.status,
+      item.kind,
+      item.scope,
+      item.searchText,
+      ...(item.tags || []),
+      ...(item.domains || []),
+    ].filter(Boolean);
+    const ms = !searchQuery || haystack.some(f => f.toLowerCase().includes(searchQuery));
     return mf && ms;
   });
 }
@@ -813,7 +1468,7 @@ function renderTable() {
     const urg = item.status.toLowerCase().includes('urgent');
     const sec = item.section.toLowerCase();
     return `<tr>
-      <td class="item-name ${sec}">${fmt(item.name)}</td>
+      <td class="item-name ${sec}">${displayName(item)}</td>
       <td class="item-summary">${item.summary}</td>
       <td><span class="badge ${sec}">${item.section}</span></td>
       <td class="status-cell ${urg ? 'urgent' : ''}">${item.status}</td>
@@ -860,7 +1515,7 @@ function renderKanban() {
     const cards = items.length ? items.map(item => {
       const urg = item.status.toLowerCase().includes('urgent');
       return `<div class="kanban-card">
-        <div class="card-title">${fmt(item.name)}</div>
+        <div class="card-title">${displayName(item)}</div>
         <div class="card-summary">${item.summary}</div>
         <div class="card-footer">
           <span class="card-status ${urg ? 'urgent' : ''}">${item.status}</span>
@@ -882,6 +1537,49 @@ function parseDate(s) { return new Date(s + 'T12:00:00'); }
 function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
 
 function dateStr(d) { return d.toISOString().slice(0, 10); }
+
+function normalizeScheduleMode(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (!normalized) return 'all-days';
+  if (['weekdays', 'weekday-only', 'weekday_only', 'business-days', 'business_days'].includes(normalized)) {
+    return 'weekdays';
+  }
+  return 'all-days';
+}
+
+function isWeekend(d) {
+  const day = d.getDay();
+  return day === 0 || day === 6;
+}
+
+function moveToScheduledDate(d, scheduleMode, direction = 1) {
+  if (normalizeScheduleMode(scheduleMode) !== 'weekdays') return new Date(d);
+  const step = direction < 0 ? -1 : 1;
+  const result = new Date(d);
+  while (isWeekend(result)) result.setDate(result.getDate() + step);
+  return result;
+}
+
+function collectScheduledDates(startDate, durationDays, scheduleMode) {
+  const total = Number(durationDays) || 0;
+  if (!startDate || total <= 0) return [];
+
+  const normalized = normalizeScheduleMode(scheduleMode);
+  const dates = [];
+  let cursor = moveToScheduledDate(startDate, normalized);
+
+  while (dates.length < total) {
+    if (normalized !== 'weekdays' || !isWeekend(cursor)) {
+      dates.push(new Date(cursor));
+    }
+    cursor = addDays(cursor, 1);
+    if (normalized === 'weekdays') {
+      cursor = moveToScheduledDate(cursor, normalized);
+    }
+  }
+
+  return dates;
+}
 
 function parseDueDate(status) {
   const m = status.match(/(?:due|by)\s+((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2})/i);
@@ -935,26 +1633,29 @@ function renderGantt() {
   planned.forEach(item => {
     const sec = item.section.toLowerCase();
     const urg = item.status.toLowerCase().includes('urgent');
-    const pStart = parseDate(item.plannedStart);
-    const pEnd = addDays(pStart, item.durationDays - 1);
+    const scheduleMode = normalizeScheduleMode(item.scheduleMode);
+    const plannedDates = collectScheduledDates(parseDate(item.plannedStart), item.durationDays, scheduleMode)
+      .map(dateStr);
+    const plannedSet = new Set(plannedDates);
     const due = item.dueDate ? parseDate(item.dueDate) : null;
+    const scheduleLabel = scheduleMode === 'weekdays' ? ' · weekdays' : '';
 
     html += `<div class="gantt-row">
       <div class="gantt-row-label">
-        <div class="label-name ${sec}">${fmt(item.name)}</div>
-        <div class="label-status ${urg ? 'urgent' : ''}">${item.status}</div>
+        <div class="label-name ${sec}">${displayName(item)}</div>
+        <div class="label-status ${urg ? 'urgent' : ''}">${item.status}${scheduleLabel}</div>
       </div>
       <div class="gantt-row-timeline">`;
 
-    days.forEach((d, i) => {
+    days.forEach((d) => {
       const dow = d.getDay();
       const isWeekend = dow === 0 || dow === 6;
       const isToday = dateStr(d) === todayStr;
       const ds = dateStr(d);
 
-      const inBlock = d >= pStart && d <= pEnd;
-      const isBlockStart = inBlock && (i === 0 || dateStr(addDays(d, -1)) < dateStr(pStart));
-      const isBlockEnd = inBlock && (i === days.length - 1 || dateStr(addDays(d, 1)) > dateStr(pEnd));
+      const inBlock = plannedSet.has(ds);
+      const isBlockStart = inBlock && !plannedSet.has(dateStr(addDays(d, -1)));
+      const isBlockEnd = inBlock && !plannedSet.has(dateStr(addDays(d, 1)));
       const isDue = due && ds === dateStr(due);
 
       let barHtml = '';
@@ -1000,7 +1701,7 @@ function renderGantt() {
       const urg = item.status.toLowerCase().includes('urgent');
       html += `<div class="gantt-row" style="opacity:0.5;">
         <div class="gantt-row-label">
-          <div class="label-name ${sec}">${fmt(item.name)}</div>
+          <div class="label-name ${sec}">${displayName(item)}</div>
           <div class="label-status ${urg ? 'urgent' : ''}">${item.status}</div>
         </div>
         <div class="gantt-row-timeline">
@@ -1033,9 +1734,15 @@ document.getElementById('navNext').addEventListener('click', () => { timelineOff
 document.getElementById('navToday').addEventListener('click', () => { timelineOffset = 0; renderGantt(); });
 
 // ── Render ──
-renderTable();
-renderKanban();
-renderGantt();
+(async function start() {
+  DATA = await loadData();
+  setActiveView(hasImmediateDayItems() ? 'day' : 'table');
+  init();
+  renderTable();
+  renderKanban();
+  renderDayPlan();
+  renderGantt();
+})();
 </script>
 </body>
 </html>

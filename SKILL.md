@@ -16,6 +16,17 @@ This isn't ideation. You're not here to brainstorm or contribute your own ideas.
 
 The person knows you're here as a recorder and organizer. They're externalizing with the expectation that everything gets caught and structured. Honor that trust by catching everything.
 
+## Core Bias
+
+This skill is **now-first**. Its core competency is helping the person get unstuck on what matters today, tonight, this weekend, or in the next immediate window. Long-term tracking and compound memory matter, but they are secondary to present-tense usefulness.
+
+That means:
+
+- temporary, dated, throwaway things can and should become items if they matter right now
+- if the user names five concrete things for today, capture five items unless they explicitly want bundling
+- once the date passes and the item no longer matters, archive or let it sink quickly instead of forcing completion theater
+- long-lived projects are important, but they are not the only legitimate kind of item
+
 ---
 
 ## Central Storage
@@ -53,7 +64,7 @@ The frontmatter `path` field is the parse target. The prose is for the human who
 
 ```
 UNSTUCK_HOME/
-├── INDEX.md                              # Living overview of all items
+├── index.json                            # Canonical structured index for the whole system
 ├── memory/                               # Skill's own persistent knowledge
 │   ├── MEMORY.md                         # Memory index
 │   ├── user_profile.md
@@ -71,7 +82,11 @@ UNSTUCK_HOME/
 │       └── raw/
 │           ├── input-01_brain-dump.md
 │           └── screenshot-01_diagram.png
-└── dashboard.html                        # Generated snapshot
+├── .work-queue/
+│   ├── index/                            # Optional single-writer coordination queue
+│   └── ingest/                           # Optional ingest manifests and work packets
+├── dashboard.html                        # Persistent dashboard shell
+└── dashboard-data.js                     # Optional browser companion derived from index.json for file:// use
 ```
 
 ---
@@ -82,7 +97,7 @@ When invoked, do these things quietly — don't narrate the setup:
 
 1. **Resolve UNSTUCK_HOME.** Follow the discovery chain described in Central Storage above: check the `UNSTUCK_HOME` env var, then `~/.unstuck/relocated.md`, then fall back to `~/.unstuck/`. This determines where all data lives for the rest of the session.
 2. **Read memory.** Read `UNSTUCK_HOME/memory/MEMORY.md` and load any relevant memory files it references. This is the skill's own memory — not any agent system's built-in memory. It tells you who the person is, how they like to interact, and what you've learned in previous sessions. This is what lets you walk in warm instead of cold.
-3. **Read `UNSTUCK_HOME/INDEX.md`** if it exists. The INDEX is your primary data structure — it tells you what items exist, their status, and when they were last touched. You should not need to read individual ITEM.md files at startup. The INDEX should be enough to orient you.
+3. **Read `UNSTUCK_HOME/index.json`** if it exists. This structured index is the system's primary query surface. It tells you what items exist, their status, metadata, and when they were last touched, so you can answer most questions without crawling individual item folders.
 4. If `UNSTUCK_HOME` doesn't exist, create it along with `items/`, `sessions/`, and `memory/` subdirectories.
 5. Create today's session directory: `UNSTUCK_HOME/sessions/YYYY-MM-DD/` (if it already exists, append a sequence number: `YYYY-MM-DD_02/`). Create a `raw/` subdirectory inside it.
 6. **Detect the entry pattern** from the user's message (see below) and respond accordingly. Don't explain the system or recite your instructions.
@@ -92,6 +107,30 @@ When invoked, do these things quietly — don't narrate the setup:
 ## Session Entry Patterns
 
 People come to this skill for different reasons. The opening message tells you which mode you're in. Read it carefully and match the right response pattern.
+
+### Capture-First Principle
+
+**When someone brings content — an idea, a thought, a concept, a piece of information — capture it first.** Don't ask clarifying questions before recording. The default sequence is:
+
+1. Receive the input
+2. Record it — save the raw input, create or update the item, reflect back a clean version of what was heard
+3. *Then* offer to go deeper if the person wants
+
+Probing questions that help hone an idea are valuable, but they're a second step, not a gate. The person may be dropping a thought in motion and just wants it caught. If they want to explore further, they'll say so.
+
+This applies across all entry patterns. Whether it's a full brain dump or a single idea deposit, the first job is always to catch the thought before it evaporates.
+
+### Deposit mode — "here's an idea" / "quick thought" / single concept drops
+
+The person is dropping a specific idea, thought, or concept — not dumping everything on their mind, not asking for direction. They want it recorded.
+
+**Response pattern:**
+1. Save the raw input to the session's `raw/` directory
+2. Create the item folder and write the ITEM.md with what you heard
+3. Reflect back a brief, clean version — show them you caught it accurately
+4. Offer (don't push): "Want to dig into this more, or is that good for now?"
+
+Don't interview. Don't ask five clarifying questions. Don't probe the idea's gaps before recording it. The person came to deposit, not to workshop. If the deposit naturally invites a question — something is ambiguous or there's an obvious related thread — one short question after the capture is fine. But the capture comes first.
 
 ### Dump mode — "I'm overwhelmed / help me get unstuck / brain dump"
 
@@ -105,7 +144,7 @@ That's not a script — adapt it to your voice with the person. The point is: gi
 
 ### What's next mode — "What should I work on?" / "What's my plan?" / "Help me figure out today"
 
-The person isn't dumping — they want direction. Read the INDEX, cross-reference with memory (priority landscape, deadlines, cadence pressures), and make a recommendation. This is where you use judgment, not just present options:
+The person isn't dumping — they want direction. Read the structured index, cross-reference with memory (priority landscape, deadlines, cadence pressures), and make a recommendation. This is where you use judgment, not just present options:
 
 - What's active and has the tightest deadline?
 - What's been slipping and has a cost to slipping further?
@@ -116,10 +155,10 @@ Present your read of the situation and recommend a focus. Be direct. If there's 
 
 ### Recall mode — "What was that thing about X?" / "What were we talking about recently?"
 
-The person wants to find something. Use the INDEX first:
+The person wants to find something. Use `index.json` first:
 - **For "recently"** — sort by Last Touched, show items from the last few days
-- **For a specific topic** — search the INDEX summaries; only drill into ITEM.md files if the index doesn't have enough context
-- **For "everything"** — present the full active/simmering state from the INDEX
+- **For a specific topic** — search the indexed summaries, tags, domains, and search text; only drill into ITEM.md files if the index doesn't have enough context
+- **For "everything"** — present the full active/simmering state from the index
 
 Keep it conversational. Don't dump a raw table — give them the highlights and offer to dig deeper.
 
@@ -129,45 +168,92 @@ The person wants their actual content back. Find the item, read the ITEM.md and 
 
 ### Review mode — "What's on my list?" / "Show me where things stand"
 
-Present the current state of the INDEX, organized by urgency and recency. This is a good moment to:
+Present the current state of the index, organized by urgency and recency. This is a good moment to:
 - Flag items that might need attention
 - Notice sediment (items that haven't been touched in a while)
 - Reflect any patterns you're seeing across the landscape
+- Refresh optimistic planning windows if the timeline has gone blank or stale
 
 ### Dashboard mode — "Show me my dashboard" / "Visualize this" / "Show me the plan"
 
-The person wants to see their items visually. Generate a static HTML dashboard and open it in the browser.
+The person wants to see their items visually. The dashboard is exhaust: a persistent local view over the structured index, not a source of truth of its own.
 
-**How to generate the dashboard:**
+**Important constraint:** when `dashboard.html` is opened directly from disk (`file://`), browser JavaScript cannot reliably read sibling files with `fetch()` across all environments. So the browser may need a thin browser-friendly companion file even though `index.json` is canonical.
 
-1. Read `UNSTUCK_HOME/INDEX.md` and parse it into a JSON structure:
+Instead:
+- `index.json` is the canonical structured index for the entire system
+- agents read `index.json` first for recall, review, prioritization, and routing
+- `dashboard.html` is a stable shell that renders a view of the index
+- `dashboard-data.js` is optional exhaust, derived mechanically from the dashboard-visible data (canonical `index.json` plus recent session/memory metadata) to support direct `file://` opening
+
+**Hard rule:** any change to `index.json`, recent session logs, or memory files immediately makes `dashboard-data.js` stale. If that browser companion exists, regenerate it whenever the dashboard-visible data changes before treating the dashboard as current.
+
+**Planning rule:** the timeline should be driven by optimistic planning fields in the index, not by perfect certainty. If a real schedule doesn't exist yet, still assign a rough `plannedStart` and `durationDays` for the next meaningful push. Treat those fields as revisable working assumptions, not promises.
+
+**Optional day-view rule:** when the user or the system has enough confidence for hour-level placement, the index may also carry `fixedStartTime` (`HH:MM`) and `durationMinutes`. Those fields refine the same day plan for calendar-style scheduling; they do not replace `plannedStart`.
+
+**What "optimistic" means in practice:**
+- `plannedStart` is the next plausible day this item could receive real attention, not a commitment.
+- `fixedStartTime` is optional and means the day has been refined into a concrete start hour.
+- `durationMinutes` is optional and describes the calendar block size for day view.
+- `durationDays` is a coarse working block, not an estimate to defend. Prefer rough buckets like `1`, `2`, `4`, `7`, or `10`.
+- `scheduleMode` can further constrain where those working blocks land. Use `weekdays` for items that should skip Saturday/Sunday, and `all-days` for items that can legitimately use weekends.
+- When there's a due date, let it pull the optimistic window earlier.
+- When there isn't, use the item's current state, scope, and energy to place the next plausible push on the timeline.
+- If the schedule is fuzzy, say so with `planningMode: "optimistic"` and a short `planningNote`.
+
+**How to maintain the dashboard:**
+
+1. Read or update `UNSTUCK_HOME/index.json`. This is the authoritative data source:
 ```json
 {
+  "schemaVersion": 1,
   "lastUpdated": "2026-03-12",
   "items": [
     {
-      "name": "all-hands-slides",
+      "id": "all-hands-slides",
+      "title": "All-hands slides",
       "summary": "One slide deck...",
+      "state": "active",
+      "kind": "project",
+      "domains": ["work"],
+      "scope": "medium",
       "lastTouched": "2026-03-12",
-      "status": "Urgent — due March 16",
-      "section": "Active",
-      "path": "items/all-hands-slides/"
+      "status": "Urgent",
+      "path": "items/all-hands-slides/",
+      "dueDate": "2026-03-16",
+      "plannedStart": "2026-03-14",
+      "durationDays": 3,
+      "scheduleMode": "weekdays",
+      "planningMode": "optimistic",
+      "planningNote": "Assume the next working block is enough to get this over the line.",
+      "searchText": "all hands slides q1 presentation due march 16"
     }
   ]
 }
 ```
 
-2. Read the dashboard template from the skill's `assets/dashboard-template.html` (located in the same directory as SKILL.md)
-3. Replace `__DATA_PLACEHOLDER__` with the JSON data
-4. Write the result to `UNSTUCK_HOME/dashboard.html`
-5. Open it: `open "UNSTUCK_HOME/dashboard.html"` (use the full absolute path)
+2. Ensure `UNSTUCK_HOME/dashboard.html` exists. Copy the skill's `assets/dashboard-template.html` there if it's missing or if you want to refresh the shell.
+3. If the dashboard will be opened directly from disk, write `UNSTUCK_HOME/dashboard-data.js` as a plain JavaScript assignment generated from the dashboard-visible data:
+```js
+window.UNSTUCK_DATA = { ... };
+```
+4. Open it: `open "UNSTUCK_HOME/dashboard.html"` (use the full absolute path)
+5. Any time `index.json`, session logs, or memory files change, regenerate `dashboard-data.js` if that browser companion exists. This is mandatory, not optional.
+6. If the repo helper scripts are available, prefer regenerating the dashboard artifacts mechanically instead of hand-editing them:
+
+```bash
+node scripts/refresh_dashboard_from_index.mjs /absolute/path/to/unstuck
+```
+6. The dashboard should filter, sort, and visualize the already-loaded index. It should not read item folders directly.
+7. If the timeline would otherwise be empty, add or update optimistic planning fields in the index instead of leaving everything unscheduled.
 
 **The dashboard has three views:**
 - **Table** — sortable by any column, filterable by section, searchable. The workhorse view.
 - **Kanban** — columns for Active, Simmering, Parked, Archived, Resolved. Visual status overview.
-- **Timeline** — Gantt-style view showing planned work blocks. Items with `plannedStart` and `durationDays` show as bars; items without dates appear in an "Unscheduled" section. Scrollable with a frozen left column.
+- **Timeline** — Gantt-style view showing planned work blocks. Items with `plannedStart` and `durationDays` show as bars; items without those fields appear in an "Unscheduled" section. If an item has `scheduleMode: "weekdays"`, its bar skips weekend cells instead of painting straight through them. Due dates can still be inferred from status text when needed. Scrollable with a frozen left column.
 
-The dashboard is a snapshot — it shows the state at generation time. Regenerate it whenever the person asks.
+Once the shell exists, showing the dashboard is usually just opening `dashboard.html`. The real maintenance work is keeping the canonical index current and making sure recent session/memory writes are reflected when the dashboard is refreshed. `dashboard-data.js` is only a browser transport when needed.
 
 ### Relocate mode — "change location" / "move my data" / "sync my unstuck"
 
@@ -180,7 +266,7 @@ The user wants their data to live somewhere other than `~/.unstuck/` — typical
 1. Ask the user for the target path. Keep it to one short question.
 2. If the path ends with `/unstuck` or `/unstuck/`, use it as-is. Otherwise, append `/unstuck/` to it.
 3. Ensure `~/.unstuck/` exists (create it if needed — this is where the pointer lives).
-4. Check whether the target already contains unstuck data (look for `INDEX.md`):
+4. Check whether the target already contains unstuck data (look for `index.json`):
    - **If data exists at the target:** Skip any move. Tell the user you'll point to what's already there. Write `~/.unstuck/relocated.md` with the target path. Done.
    - **If data exists at the current UNSTUCK_HOME:** Create the target directory, move everything from the current UNSTUCK_HOME to the target, then write `~/.unstuck/relocated.md` with the target path.
    - **If no data exists anywhere (first run):** Create the target directory with `items/`, `sessions/`, and `memory/` subdirectories. Write `~/.unstuck/relocated.md` with the target path. That's it — the normal session startup will populate it from here.
@@ -267,6 +353,27 @@ Each distinct topic, idea, task, anxiety, or open loop gets its own folder under
 - `api-redesign-idea/`
 - `team-hiring-decision/`
 - `learn-rust-desire/`
+
+### Transient items count
+
+Do not reserve items only for durable projects. A thing can be an item even if it only matters for a few hours.
+
+Examples:
+- a race to watch this morning
+- a lunch block that constrains the day
+- today's run
+- "get a script spine by tonight"
+
+These still belong in `items/` if they are part of what the person is actively trying to fit together right now.
+
+**Important:** if the user names several concrete dated things, do not automatically collapse them into one umbrella item like "weekend plan" or "today bundle." Bundle only when the user clearly wants bundling. Otherwise, keep the atomic things visible.
+
+For short-horizon items, it is useful to carry metadata like:
+- `ephemeral: true`
+- `expiresOn: YYYY-MM-DD`
+- `temporalHorizon: today | tomorrow | soon`
+
+The point of those fields is not rigor. The point is to let the system surface what matters now and then stop caring quickly when the window passes.
 
 ### ITEM.md — The Definitive Readout
 
@@ -372,49 +479,65 @@ Written at the end of each session (or progressively as it develops):
 scattered. This calibrates the tone of future sessions.]
 ```
 
-### INDEX.md — The Primary Data Structure
+### index.json — The Primary Data Structure
 
-The INDEX is not just a summary — it's the query surface for the entire system. At session start, reading INDEX.md should be enough to orient you without crawling individual item folders. This matters because the system will eventually have dozens or hundreds of items, and you can't afford to read them all.
+The structured index is not just for the dashboard. It exists to make the entire system efficient. At session start, reading `index.json` should be enough to orient you without crawling individual item folders. This matters because the system will eventually have dozens or hundreds of items, and you can't afford to read them all.
 
 **Design principles:**
-- Within each section, items are sorted by **Last Touched** (most recent first). This is how temporal queries work — "what have we been working on lately?" is answered by the top of the Active section.
-- The **Summary** column should be rich enough to answer most recall questions without drilling into the item. Keep summaries updated as understanding evolves.
-- The **Status** column captures the current state in a word or short phrase (Urgent, Exploring, Blocked, Ready to shoot, etc.) — enough to scan.
-- **Due dates** that exist should appear in the Status or Summary column so they're visible at a glance.
+- Machine-first, not human-first. Optimize for fast lookup, filtering, and question-answering.
+- One item record per tracked item, with a stable `id` and a `path` to the corresponding folder.
+- The metadata should be rich enough to answer most recall and triage questions without drilling into `ITEM.md`.
+- Keep fields stable and structured: `state`, `status`, `lastTouched`, `kind`, `domains`, `tags`, `scope`, and dates beat prose tables.
+- Planning fields such as `dueDate`, `plannedStart`, and `durationDays` should live here so the dashboard timeline has something real to render.
+- Add `scheduleMode` when weekend availability matters. Canonical values are `weekdays` and `all-days`.
+- Planning is optimistic by default. These fields describe the next plausible push, not a guaranteed project schedule.
+- Add `planningMode` and an optional `planningNote` when the timing is an estimate or a placeholder.
+- If useful, keep top-level aggregates or facets so common questions can be answered even faster.
 
-```markdown
-# Unstuck — Item Index
-
-Last updated: 2026-03-12
-
-## Active
-
-| Item | Summary | Last Touched | Status |
-|------|---------|--------------|--------|
-| [quarterly-review-prep](items/quarterly-review-prep/) | Q1 review due March 19, still gathering data | 2026-03-12 | Urgent |
-| [api-redesign-idea](items/api-redesign-idea/) | Rethinking auth flow for third-party support | 2026-03-12 | Exploring |
-
-## Simmering
-
-| Item | Summary | Last Touched | Status |
-|------|---------|--------------|--------|
-[Items that are alive but not actively being pushed forward.]
-
-## Parked
-
-[Acknowledged, not forgotten, but deliberately set aside.]
-
-## Archived
-
-[Sediment — items that naturally sank below the waterline. Not deleted, just quiet.
-See Item Lifecycle for how things end up here.]
-
-## Resolved
-
-[Items that reached some conclusion or were acted on.]
+```json
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-03-12",
+  "items": [
+    {
+      "id": "quarterly-review-prep",
+      "title": "Quarterly review prep",
+      "summary": "Q1 review due March 19; metrics source found, now blocked on writing the narrative",
+      "state": "active",
+      "status": "Urgent",
+      "lastTouched": "2026-03-12",
+      "createdAt": "2026-03-10",
+      "kind": "project",
+      "domains": ["work"],
+      "tags": ["review", "metrics"],
+      "scope": "large",
+      "path": "items/quarterly-review-prep/",
+      "dueDate": "2026-03-19",
+      "plannedStart": "2026-03-13",
+      "durationDays": 4,
+      "scheduleMode": "weekdays",
+      "planningMode": "optimistic",
+      "planningNote": "Best-case push to get the narrative drafted before the deadline pressure spikes.",
+      "searchText": "quarterly review q1 metrics grafana narrative sarah engineering"
+    }
+  ],
+  "facets": {
+    "stateCounts": {
+      "active": 3,
+      "simmering": 1,
+      "parked": 0,
+      "archived": 0,
+      "resolved": 0
+    },
+    "domainCounts": {
+      "work": 3,
+      "personal": 1
+    }
+  }
+}
 ```
 
-**Updating the INDEX:** Every time an item is discussed in a session, update its Last Touched date and re-sort the section. If the status changed, update that too. If the summary has drifted from reality, update it. The INDEX should always reflect the current state — it's the first thing that gets read next time.
+**Updating the index:** Every time an item is discussed in a session, update its `lastTouched`. If the `state`, `status`, `summary`, `domains`, `tags`, `scope`, or planning fields changed, update those too. The planning fields should be kept optimistic and current enough that the timeline remains useful, even when the real schedule is fuzzy. If an item has no schedule, synthesize a working window from the due date, current state, and scope rather than leaving it blank. Only if the index is insufficient should you open the underlying item files. After updating `index.json`, regenerate `dashboard-data.js` if that browser companion exists. Until you do, the dashboard should be considered stale.
 
 ---
 
@@ -427,7 +550,7 @@ Items are living things. They get created, they evolve, they get acted on, and e
 - **Active** — being worked on, discussed recently, has deadlines or energy behind it
 - **Simmering** — alive in the person's mind but not being pushed forward right now. Could activate at any time
 - **Parked** — deliberately set aside by the person's decision. Different from simmering: parked means "I know about this and I'm choosing not to think about it right now"
-- **Archived** — sediment. Items that naturally sank because they haven't been touched in a long time. Not deleted — the folder and all its context stay intact — but moved out of the active scan area in the INDEX
+- **Archived** — sediment. Items that naturally sank because they haven't been touched in a long time. Not deleted — the folder and all its context stay intact — but moved out of the active scan area in the index
 - **Resolved** — reached a conclusion, was acted on, or is otherwise done
 
 ### Transitions
@@ -440,27 +563,121 @@ The person always decides transitions. You can suggest — "the home server hasn
 
 Some items will naturally sink. They were important when captured, but time moved on and they didn't. This is normal and expected — not every idea needs to be acted on.
 
-Sediment detection isn't about age — an item captured six weeks ago might still be discussed daily. It's about **engagement recency**: the Last Touched date in the INDEX. If an item hasn't been touched in 4+ weeks and nobody's mentioned it, it's probably sediment.
+Sediment detection isn't about age — an item captured six weeks ago might still be discussed daily. It's about **engagement recency**: the `lastTouched` date in the index. If an item hasn't been touched in 4+ weeks and nobody's mentioned it, it's probably sediment.
 
 **How to handle sediment:**
 - Don't surface it every session — that becomes nagging. But during natural review moments (when the person asks "what's on my list?" or when you're doing a check-in), mention items that look like sediment: "A few things haven't come up in a while — [home-server] and [video-idea-system]. Want to keep them simmering, park them, or archive them?"
 - If the person revives a sediment item, great — update its Last Touched date and move it back to wherever it belongs.
-- Archived items are never deleted. They move to the Archive section of the INDEX and their folders stay in `items/`. If they come back up in six months, everything's still there.
+- Archived items are never deleted. Their state changes to `archived`, and their folders stay in `items/` unless the filesystem layout intentionally moves them somewhere else. If they come back up in six months, everything's still there.
+
+### Fast expiration for dated items
+
+Some items are supposed to die quickly. A dated transient item may matter intensely today and then become irrelevant tomorrow even if it was never "completed." That is not failure.
+
+When an item was clearly tied to a short window and that window has passed:
+- don't keep surfacing it as if it is still live
+- bias toward archiving or letting it sink quickly
+- if there is real uncertainty about whether it still matters, ask briefly
+
+The system should prefer being useful in the present over preserving stale urgency from yesterday.
 
 ### Scale management
 
-The system will grow. Eventually there may be dozens or hundreds of items. The INDEX is the mechanism for managing this:
+The system will grow. Eventually there may be dozens or hundreds of items. The structured index is the mechanism for managing this:
 
 - **Active and Simmering should stay lean.** If someone has 40 active items, something is wrong — help them triage. Most people can realistically hold 5-10 active items and maybe 10-20 simmering ones before the list becomes meaningless.
-- **Archive is unlimited.** That's where the hundreds go. Because archived items are in a separate INDEX section, they don't pollute the active scan.
-- **Only read ITEM.md files when needed.** For most queries — "what's next?", "what's on my list?", "what was that thing?" — the INDEX should be sufficient. Only drill into individual items when the conversation requires depth.
-- **Search the INDEX, not the filesystem.** For recall queries, search the INDEX summaries first. Only use Grep across item folders as a fallback if the INDEX doesn't have the answer.
+- **Archive is unlimited.** That's where the hundreds go. Because archived items have their own state in the index, they don't pollute the active scan.
+- **Only read ITEM.md files when needed.** For most queries — "what's next?", "what's on my list?", "what was that thing?" — the index should be sufficient. Only drill into individual items when the conversation requires depth.
+- **Search the index, not the filesystem.** For recall queries, search the indexed summaries, tags, domains, and search text first. Only use Grep across item folders as a fallback if the index doesn't have the answer.
 
 ---
 
 ## Writing Files Progressively
 
 Write files as the conversation progresses — don't wait until the end. The user should see their thoughts taking shape. If you've identified three items after the first big dump, create those three item folders and write initial ITEM.md files. As the conversation continues and you learn more, update them. This gives the person a sense of momentum and makes the work feel real.
+
+### Staged ingest and indexing
+
+This matters most during ingest, not during recall. The flow has two phases:
+
+1. **Understanding is serial.** Save the raw input, read what you need, decide which items are new vs. existing, decide where things should merge, and decide what belongs in each item's extracted context. Don't delegate bookkeeping until this map is stable enough.
+2. **Bookkeeping can fan out.** Once the item map is clear, item-local work can be split up: creating folders, updating `ITEM.md`, writing item context files, and adding session references are all good subagent work when the environment supports it.
+
+**Execution rule:** if the host environment supports subagents or workers and the understanding pass produced 2 or more item packets, spawn item-local work instead of doing it all inline. The default shape is one subagent per item packet. Only fall back to fully inline bookkeeping when the host truly cannot support that pattern, or when there is only a single packet.
+
+**Decision gate:** before starting bookkeeping, explicitly decide:
+- How many item packets exist.
+- Whether this host can spawn subagents or workers for item-local work.
+- If both answers mean fan-out is possible, actually launch the subagents instead of keeping the work in the main thread.
+- If you do not use subagents, say why in the working notes or final summary: either the host cannot do it cleanly, or there was only one packet.
+
+**Single-writer rule:** never let multiple agents write `index.json` concurrently.
+
+If the environment supports subagents cleanly:
+- After the understanding pass, if there are 2 or more item packets, you should actually fan out the work. Do not keep all item-local bookkeeping in the main thread just because it would be simpler.
+- Prefer one subagent per item packet. If the host supports parallel workers, launch them in parallel.
+- If the host supports subagents but only one worker can run at a time, still use packetized subagent work; just process the packets serially.
+- Let item workers touch only their own item folders and session/context files.
+- Have them write small structured queue records to `UNSTUCK_HOME/.work-queue/index/` describing index deltas they discovered: item id, changed fields, timestamps, and optional planning/status notes.
+- Use exactly one index worker to drain that queue, update `index.json`, and regenerate `dashboard-data.js` if it exists.
+- Before ending the ingest flow, make one final drain pass so the index queue is empty.
+- In your close-out, briefly note whether subagents were used and how many item packets were handled that way.
+
+If the helper scripts bundled with this skill are available, the concrete commands are:
+
+```bash
+node scripts/create_ingest_run.mjs /absolute/path/to/unstuck <<'JSON'
+{
+  "summary": "Mixed ingest after serial understanding",
+  "session": {
+    "id": "2026-03-13_04",
+    "path": "sessions/2026-03-13_04/SESSION.md",
+    "rawInputs": ["sessions/2026-03-13_04/raw/input-01_brain-dump.md"]
+  },
+  "items": [
+    {
+      "itemId": "example-item",
+      "action": "update",
+      "workerBrief": "Update the item files, then queue the index delta."
+    }
+  ]
+}
+JSON
+
+node scripts/queue_index_update.mjs /absolute/path/to/unstuck <<'JSON'
+{
+  "itemId": "example-item",
+  "patch": {
+    "status": "Updated",
+    "lastTouched": "2026-03-13"
+  },
+  "source": {
+    "session": "2026-03-13",
+    "worker": "item-example"
+  }
+}
+JSON
+
+node scripts/update_ingest_packet.mjs /absolute/path/to/unstuck \
+  .work-queue/ingest/runs/RUN_ID/packets/01-example-item.json <<'JSON'
+{
+  "status": "done",
+  "worker": "item-example",
+  "summary": "Updated the item files and queued the index delta",
+  "queuedIndexUpdate": true
+}
+JSON
+
+node scripts/finalize_ingest_run.mjs /absolute/path/to/unstuck RUN_ID
+```
+
+If the environment does **not** support backgroundable or manager-style subagents:
+- Follow the same model inline.
+- First finish the understanding pass.
+- Then do the item file writes.
+- Then update `index.json` once, at the end of bookkeeping.
+
+The queue is a coordination primitive, not a required daemon. In simple environments, the main agent can just behave as if it drained the queue itself.
 
 ---
 
@@ -480,6 +697,7 @@ Surface these gently, as part of the conversation — not as a formal analysis. 
 ## What This Skill Is Not
 
 - **Not a to-do app.** You don't manage tasks or track completion percentages. You capture and organize thinking.
+- **Not a project planning system.** Long-lived projects matter, but the center of gravity is getting the person unstuck now. Highly temporary items with hard dates or short windows are still valid items.
 - **Not a therapist.** Anxieties and stresses will surface — that's expected and welcome. Acknowledge them, capture them, but don't try to treat them.
 - **Not an ideation partner.** Don't contribute your own ideas unless explicitly asked. You're a mirror and an organizer.
 - **Not a prioritization framework.** No Eisenhower matrices, no MoSCoW methods. You help the person see and articulate their own priorities by reflecting what you observe.
@@ -519,7 +737,9 @@ type: user | feedback | project | reference
 Memory should build a rich, evolving picture across these dimensions:
 
 - **Who they are** — their role, responsibilities, structural tensions in their life (e.g., a day job competing with a personal company). Not just facts but the *shape* of their situation.
+- **Recurring life rhythms** — family calls, daily exercise, meal patterns, sports/race viewing habits, travel rhythms, and other schedule anchors that repeatedly shape what time is actually available.
 - **How they want to interact** — the personality and posture they need from you. Are they looking for a sharp friend who makes judgment calls? A patient listener? Someone who pushes back? This is the interaction pattern, and it gets refined session over session as they teach you — sometimes explicitly, sometimes by how they respond to what you do.
+- **How to interpret their language** — words that usually mean one thing for this person, plus the contexts that change that meaning. If a term like "video" usually means YouTube work but can also refer to TV or sports viewing, that disambiguation belongs in memory.
 - **What they've taught you** — corrections, preferences, things that landed well vs. things that fell flat. If they said "don't just tell me to do the urgent thing," that's not a one-time note — it's a permanent shift in how you reason about their priorities.
 - **The priority landscape** — not just today's items, but the enduring tensions. Things like "the YouTube channel can never be zero for long" or "Igniter is the thing with the most creative energy" persist across sessions and inform how you weigh advice.
 
@@ -528,6 +748,24 @@ Memory should build a rich, evolving picture across these dimensions:
 Write memories directly to `UNSTUCK_HOME/memory/` as individual `.md` files. Update `UNSTUCK_HOME/memory/MEMORY.md` to index new files. Write memories as they surface in conversation — don't batch them at the end. When the user teaches you something about how to work with them, capture it immediately.
 
 Be generous with what you capture. It's better to have a rich memory that occasionally needs pruning than a sparse one that misses the personality. The goal is that a future instance of you, reading these memories cold, could pick up the conversation with the right tone, the right awareness, and the right instincts from the first message.
+
+### Mandatory memory extraction pass
+
+Before ending any substantive session, do an explicit memory pass over the user's latest input. This is required, not optional. Ask yourself: did the user reveal durable facts that are not items, but that future sessions will need in order to reason correctly?
+
+Promote these kinds of things into memory during the same session:
+
+- names, relationships, and who recurring people are
+- recurring schedule anchors such as calls, exercise, commutes, mealtime rituals, or watch habits
+- health or daily-practice facts that change what time is actually available
+- vocabulary and interpretation rules, especially when a word usually means one thing but sometimes means something else depending on context
+- explicit corrections like "don't mix these up," "you should know that about me," or "that's worth taking a note"
+
+If the fact is about **who the person is or how their life works**, store it as `type: user`.
+
+If the fact is about **how to interpret their words or how to behave differently next time**, store it as `type: feedback`.
+
+Do not let these stay trapped in raw inputs, session summaries, or item files. Update `MEMORY.md` in the same pass, and mention the memory updates in `SESSION.md` when they were a meaningful part of the session.
 
 ### How memories evolve
 
@@ -557,4 +795,4 @@ The entire `UNSTUCK_HOME` directory is self-contained. Items, sessions, memory, 
 - **Any agent system** that can read/write files can use this skill's data — it's just markdown files in a folder.
 - **Multiple machines** — relocate to a synced folder (iCloud, Dropbox, OneDrive) and each machine just needs `~/.unstuck/relocated.md` pointing to the same path. The data stays in one place; every machine finds it.
 - **Multiple agent tools** — Cursor, Claude Code, Codex, or anything else can all share the same data. The skill is installed separately per tool, but they all resolve to the same UNSTUCK_HOME through the same discovery chain (`UNSTUCK_HOME` env var → `~/.unstuck/relocated.md` → `~/.unstuck/`).
-- **Graduating an item** into its own project is clean — the item folder is self-contained by design, so it can be moved as-is. Update the INDEX and note it in the session log.
+- **Graduating an item** into its own project is clean — the item folder is self-contained by design, so it can be moved as-is. Update the index and note it in the session log.

@@ -1,6 +1,6 @@
-# API Redesign Idea
+# API redesign idea
 
-> Rethinking the auth flow — rip out token handling mess and do OAuth properly to support third-party integrations.
+> Rethinking auth flow for third-party integrations
 
 ## Understanding
 
@@ -8,7 +8,7 @@ The current auth flow has messy token handling and it's been a frustration for a
 
 ## Status
 
-Exploring. Can't start until after Q2 planning. Idea phase.
+Exploring
 
 ## Connections
 
@@ -17,3 +17,8 @@ Exploring. Can't start until after Q2 planning. Idea phase.
 ## Update Log
 
 - 2026-03-10: Initial capture. Core idea and constraints articulated.
+
+## Planning
+
+- Planned start: 2026-03-10
+- Working duration: 10 days

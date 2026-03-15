@@ -1,0 +1,59 @@
+.shell {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.fieldWrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.searchInput,
+.quickInput {
+  min-width: 220px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  background: rgba(8, 11, 18, 0.72);
+  color: var(--text-primary);
+}
+
+.stateRow {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.stateButton,
+.stateButtonActive,
+.quickButton {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(8, 11, 18, 0.72);
+  color: var(--text-dim);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.stateButtonActive,
+.quickButton {
+  color: var(--text-primary);
+  background: var(--surface-active);
+}
+
+.quickForm {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}

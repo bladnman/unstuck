@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-03-10",
+  "items": [
+    {
+      "id": "quarterly-review-prep",
+      "title": "Quarterly review prep",
+      "summary": "Q1 review due next week, blocked on finding metrics in new dashboard",
+      "state": "active",
+      "status": "Urgent",
+      "lastTouched": "2026-03-10",
+      "createdAt": "2026-03-10",
+      "kind": "project",
+      "domains": ["work"],
+      "tags": ["review", "metrics"],
+      "scope": "large",
+      "path": "items/quarterly-review-prep/",
+      "searchText": "quarterly review q1 metrics dashboard engineering sarah urgent"
+    },
+    {
+      "id": "api-redesign-idea",
+      "title": "API redesign idea",
+      "summary": "Rethinking auth flow for third-party integrations",
+      "state": "active",
+      "status": "Exploring",
+      "lastTouched": "2026-03-10",
+      "createdAt": "2026-03-10",
+      "kind": "idea",
+      "domains": ["work"],
+      "tags": ["api", "auth", "oauth", "integrations"],
+      "scope": "large",
+      "path": "items/api-redesign-idea/",
+      "searchText": "api redesign auth flow token handling oauth third-party integrations"
+    },
+    {
+      "id": "marcus-departure-concern",
+      "title": "Marcus departure concern",
+      "summary": "Worried Marcus may be leaving, he's the only one who knows the billing system",
+      "state": "active",
+      "status": "Anxiety",
+      "lastTouched": "2026-03-10",
+      "createdAt": "2026-03-10",
+      "kind": "concern",
+      "domains": ["work"],
+      "tags": ["team", "knowledge risk", "billing"],
+      "scope": "large",
+      "path": "items/marcus-departure-concern/",
+      "searchText": "marcus leaving recruiter billing system knowledge risk anxiety"
+    },
+    {
+      "id": "learn-rust",
+      "title": "Learn Rust",
+      "summary": "Want to learn Rust, signed up for Rustlings 3 months ago, haven't started",
+      "state": "simmering",
+      "status": "Simmering",
+      "lastTouched": "2026-03-10",
+      "createdAt": "2026-03-10",
+      "kind": "learning",
+      "domains": ["personal"],
+      "tags": ["rust", "learning", "rustlings"],
+      "scope": "medium",
+      "path": "items/learn-rust/",
+      "searchText": "learn rust rustlings personal learning haven't started"
+    }
+  ],
+  "facets": {
+    "stateCounts": {
+      "active": 3,
+      "simmering": 1,
+      "parked": 0,
+      "archived": 0,
+      "resolved": 0
+    },
+    "domainCounts": {
+      "work": 3,
+      "personal": 1
+    },
+    "kindCounts": {
+      "project": 1,
+      "idea": 1,
+      "concern": 1,
+      "learning": 1
+    }
+  }
+}

@@ -1,0 +1,75 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-8);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.main {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.workspace {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.surface {
+  background: linear-gradient(180deg, rgba(19, 25, 37, 0.98), rgba(12, 17, 28, 0.98));
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-strong);
+}
+
+.workspaceSurface {
+  padding: var(--space-6);
+}
+
+.rail {
+  position: sticky;
+  top: var(--space-8);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.railTabs {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.railTab {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(12, 17, 28, 0.84);
+  color: var(--text-dim);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.railTabActive {
+  color: var(--text-primary);
+  background: var(--surface-active);
+}
+
+.emptyRail {
+  padding: var(--space-6);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 1380px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    position: static;
+  }
+}
