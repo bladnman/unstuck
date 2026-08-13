@@ -63,10 +63,10 @@ export function AiPanel({
   return (
     <section className={styles.panel}>
       <header className={styles.header}>
-        <h2 className={styles.title}>AI side panel</h2>
+        <h2 className={styles.title}>Work with /unstuck</h2>
         <p className={styles.subcopy}>
-          This is an experimental CLI bridge. It opens a long-lived terminal-backed session, prefixes
-          prompts with the Unstuck skill command, and can send the currently selected item as context.
+          Keep the workspace visible while you run a live thread against the selected item and send
+          grounded prompts without leaving the board.
         </p>
       </header>
 

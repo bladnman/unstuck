@@ -1,7 +1,13 @@
 import { useState } from 'react';
 
 import { SegmentedControl } from '@/components/SegmentedControl/SegmentedControl';
-import type { DashboardFilters as DashboardFiltersState, DashboardView, HorizonValue, ItemState } from '@/types/unstuck';
+import type {
+  DashboardFilters as DashboardFiltersState,
+  DashboardView,
+  HorizonValue,
+  ItemState,
+  UnstuckItem,
+} from '@/types/unstuck';
 import { stateOrder } from '@/utils/dashboardFilters';
 
 import styles from './DashboardFilters.module.css';
@@ -14,6 +20,7 @@ const viewOptions: Array<{ label: string; value: DashboardView }> = [
 ];
 
 const sharedHorizonOptions: Array<{ label: string; value: HorizonValue }> = [
+  { label: 'All', value: 'all' },
   { label: 'Today', value: 'today' },
   { label: '3 Days', value: '3d' },
   { label: 'Week', value: 'week' },
@@ -30,7 +37,7 @@ const horizonOptionsByView: Record<DashboardView, Array<{ label: string; value: 
   board: sharedHorizonOptions,
   table: sharedHorizonOptions,
   day: dayHorizonOptions,
-  timeline: sharedHorizonOptions.filter((option) => option.value !== 'today'),
+  timeline: sharedHorizonOptions.filter((option) => ['week', '2w', '4w', '8w'].includes(option.value)),
 };
 
 interface DashboardFiltersProps {
@@ -41,16 +48,22 @@ interface DashboardFiltersProps {
   onToggleState: (state: ItemState) => void;
   onSetAllStates: () => void;
   onCreateItem: (title: string, summary: string) => Promise<void>;
+  onOpenSelectedItem: () => void;
+  onQuickScheduleSelected: (preset: 'today' | 'tomorrow' | 'next-week' | 'unscheduled') => Promise<void>;
+  selectedItem: UnstuckItem | null;
 }
 
 export function DashboardFilters({
   filters,
   onCreateItem,
   onHorizonChange,
+  onOpenSelectedItem,
+  onQuickScheduleSelected,
   onSearchChange,
   onSetAllStates,
   onToggleState,
   onViewChange,
+  selectedItem,
 }: DashboardFiltersProps) {
   const [newItemTitle, setNewItemTitle] = useState('');
   const horizonOptions = horizonOptionsByView[filters.view];
@@ -109,6 +122,57 @@ export function DashboardFilters({
               {state}
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className={styles.selectionDock}>
+        <div>
+          <span className={styles.selectionLabel}>Selected item</span>
+          <div className={styles.selectionTitle}>
+            {selectedItem ? selectedItem.title : 'Pick an item to move it quickly.'}
+          </div>
+        </div>
+        <div className={styles.selectionActions}>
+          <button
+            className={styles.selectionButton}
+            disabled={!selectedItem}
+            onClick={onOpenSelectedItem}
+            type="button"
+          >
+            Open detail
+          </button>
+          <button
+            className={styles.selectionButton}
+            disabled={!selectedItem}
+            onClick={() => onQuickScheduleSelected('today')}
+            type="button"
+          >
+            Today
+          </button>
+          <button
+            className={styles.selectionButton}
+            disabled={!selectedItem}
+            onClick={() => onQuickScheduleSelected('tomorrow')}
+            type="button"
+          >
+            Tomorrow
+          </button>
+          <button
+            className={styles.selectionButton}
+            disabled={!selectedItem}
+            onClick={() => onQuickScheduleSelected('next-week')}
+            type="button"
+          >
+            Next week
+          </button>
+          <button
+            className={styles.selectionButtonGhost}
+            disabled={!selectedItem}
+            onClick={() => onQuickScheduleSelected('unscheduled')}
+            type="button"
+          >
+            Unscheduled
+          </button>
         </div>
       </div>
     </section>

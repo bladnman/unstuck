@@ -1,6 +1,6 @@
 export type ItemState = 'active' | 'simmering' | 'parked' | 'archived' | 'resolved';
 export type DashboardView = 'table' | 'board' | 'day' | 'timeline';
-export type HorizonValue = 'today' | '3d' | 'week' | '2w' | '4w' | '8w';
+export type HorizonValue = 'all' | 'today' | '3d' | 'week' | '2w' | '4w' | '8w';
 
 export interface UnstuckItem {
   id: string;
@@ -15,15 +15,15 @@ export interface UnstuckItem {
   tags?: string[];
   scope?: string;
   path?: string;
-  dueDate?: string;
-  plannedStart?: string;
-  fixedStartTime?: string;
-  durationMinutes?: number;
-  durationDays?: number;
+  dueDate?: string | null;
+  plannedStart?: string | null;
+  fixedStartTime?: string | null;
+  durationMinutes?: number | null;
+  durationDays?: number | null;
   scheduleMode?: string;
   planningMode?: string;
   planningNote?: string;
-  expiresOn?: string;
+  expiresOn?: string | null;
   searchText?: string;
   rank?: number;
 }
@@ -68,6 +68,22 @@ export interface DashboardResponse {
   items: UnstuckItem[];
   facets: DashboardFacets;
   dashboard: DashboardMeta;
+}
+
+export interface SessionBrowserEntry extends RecentSession {
+  markdown?: string;
+}
+
+export interface SessionBrowserDetail extends RecentSession {
+  markdown: string;
+}
+
+export interface MemoryBrowserEntry extends RecentMemory {
+  markdown?: string;
+}
+
+export interface MemoryBrowserDetail extends RecentMemory {
+  markdown: string;
 }
 
 export interface ItemContextFile {

@@ -1,7 +1,15 @@
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 
-import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
 import type { HorizonValue, UnstuckItem } from '@/types/unstuck';
@@ -60,6 +68,33 @@ function TimelineBar({
   );
 }
 
+function UnscheduledTimelineCard({
+  item,
+  onOpenItem,
+}: {
+  item: UnstuckItem;
+  onOpenItem: (itemId: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: item.id,
+  });
+
+  return (
+    <button
+      className={`${styles.unscheduledCard} ${isDragging ? styles.barDragging : ''}`}
+      onClick={() => onOpenItem(item.id)}
+      ref={setNodeRef}
+      style={{ transform: CSS.Translate.toString(transform) }}
+      type="button"
+      {...attributes}
+      {...listeners}
+    >
+      <span>{item.title}</span>
+      <span>{item.status}</span>
+    </button>
+  );
+}
+
 export function TimelineView({
   horizon,
   items,
@@ -69,6 +104,15 @@ export function TimelineView({
 }: TimelineViewProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const dates = getTimelineDates(horizon);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
+  const scheduledItems = items.filter((item) => item.plannedStart);
+  const unscheduledItems = items.filter((item) => !item.plannedStart);
 
   const handleDragEnd = async (event: DragEndEvent) => {
     setActiveId(null);
@@ -96,7 +140,23 @@ export function TimelineView({
       <DndContext
         onDragEnd={handleDragEnd}
         onDragStart={(event) => setActiveId(String(event.active.id))}
+        sensors={sensors}
       >
+        <div className={styles.unscheduledStrip}>
+          <div className={styles.unscheduledHeader}>
+            <span className={styles.unscheduledTitle}>Unscheduled</span>
+            <span className={styles.unscheduledCount}>{unscheduledItems.length}</span>
+          </div>
+          <div className={styles.unscheduledList}>
+            {unscheduledItems.length ? (
+              unscheduledItems.map((item) => (
+                <UnscheduledTimelineCard item={item} key={item.id} onOpenItem={onOpenItem} />
+              ))
+            ) : (
+              <div className={styles.unscheduledEmpty}>Everything visible already has a date.</div>
+            )}
+          </div>
+        </div>
         <div
           className={styles.grid}
           style={{ '--timeline-columns': String(dates.length) } as CSSProperties}
@@ -108,7 +168,7 @@ export function TimelineView({
             </div>
           ))}
 
-          {items.map((item) => {
+          {scheduledItems.map((item) => {
             const startIndex = dates.indexOf(item.plannedStart || '');
             return (
               <div key={item.id} style={{ display: 'contents' }}>
@@ -142,7 +202,9 @@ export function TimelineView({
             );
           })}
 
-          {!items.length ? <div className={styles.empty}>No items inside the current filters.</div> : null}
+          {!scheduledItems.length ? (
+            <div className={styles.empty}>No scheduled items inside the current filters.</div>
+          ) : null}
         </div>
       </DndContext>
     </div>

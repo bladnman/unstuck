@@ -1,9 +1,8 @@
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
+import { constants as fsConstants } from 'node:fs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
-import { DEFAULT_AI_WORKDIR, REPO_ROOT } from '../config/appConfig.mjs';
-
-const execFileAsync = promisify(execFile);
+import { DEFAULT_AI_WORKDIR } from '../config/appConfig.mjs';
 
 const BASE_PROVIDERS = [
   {
@@ -26,15 +25,35 @@ const BASE_PROVIDERS = [
   },
 ];
 
-async function commandExists(command) {
+async function isExecutable(filePath) {
   try {
-    await execFileAsync('zsh', ['-lc', `command -v ${command}`], {
-      cwd: REPO_ROOT,
-    });
+    const stats = await fs.stat(filePath);
+    if (!stats.isFile() && !stats.isSymbolicLink()) {
+      return false;
+    }
+
+    await fs.access(filePath, fsConstants.X_OK);
     return true;
   } catch {
     return false;
   }
+}
+
+async function commandExists(command) {
+  if (path.isAbsolute(command)) {
+    return isExecutable(command);
+  }
+
+  const searchPath = process.env.PATH || '';
+  const directories = searchPath.split(path.delimiter).filter(Boolean);
+
+  for (const directory of directories) {
+    if (await isExecutable(path.join(directory, command))) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export async function discoverCliProviders() {

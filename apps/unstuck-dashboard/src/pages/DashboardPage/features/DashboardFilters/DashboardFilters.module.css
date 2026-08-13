@@ -57,3 +57,57 @@
   gap: var(--space-2);
   flex-wrap: wrap;
 }
+
+.selectionDock {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: rgba(8, 11, 18, 0.54);
+}
+
+.selectionLabel {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.selectionTitle {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.selectionActions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.selectionButton,
+.selectionButtonGhost {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface-active);
+  color: var(--text-primary);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.selectionButtonGhost {
+  background: rgba(8, 11, 18, 0.72);
+}
+
+.selectionButton:disabled,
+.selectionButtonGhost:disabled {
+  opacity: 0.45;
+}

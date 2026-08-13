@@ -3,7 +3,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--space-6);
-  padding: var(--space-6);
+  padding: var(--space-5) var(--space-6);
   border-radius: var(--radius-lg);
   background: linear-gradient(160deg, rgba(19, 25, 37, 0.98), rgba(15, 22, 33, 0.92));
   border: 1px solid var(--border-soft);
@@ -25,23 +25,29 @@
 
 .title {
   margin: 0;
-  font-size: 34px;
+  font-size: 30px;
   line-height: 1;
   letter-spacing: -0.04em;
 }
 
 .description {
   margin: 0;
-  max-width: 820px;
+  max-width: 720px;
   color: var(--text-secondary);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .meta {
   display: grid;
   gap: var(--space-3);
   justify-items: end;
+}
+
+.actionRow {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .metaRow {
@@ -79,6 +85,15 @@
   border: 1px solid var(--border-soft);
   border-radius: 999px;
   background: var(--surface-active);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  font-weight: 700;
+}
+
+.secondaryButton {
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: rgba(8, 11, 18, 0.74);
   color: var(--text-primary);
   padding: 12px 16px;
   font-weight: 700;

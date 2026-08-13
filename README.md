@@ -48,6 +48,14 @@ Shows the current state of everything you're tracking — active, simmering, par
 ```
 Opens an interactive HTML dashboard with table, kanban, and timeline views.
 
+If you want the dynamic dashboard running all the time on macOS, install the LaunchAgent:
+
+```bash
+node scripts/manage_dashboard_service.mjs install
+```
+
+That keeps the server on `127.0.0.1:4004` and gives you a bookmarkable browser URL at `http://unstuck.localhost:4004`.
+
 ## How it works
 
 ```

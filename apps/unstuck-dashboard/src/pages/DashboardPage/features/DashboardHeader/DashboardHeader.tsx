@@ -6,23 +6,25 @@ interface DashboardHeaderProps {
   dashboard: DashboardResponse | null;
   errorMessage: string;
   onOpenAiPanel: () => void;
+  onToggleOverview: () => void;
+  overviewExpanded: boolean;
 }
 
 export function DashboardHeader({
   dashboard,
   errorMessage,
   onOpenAiPanel,
+  onToggleOverview,
+  overviewExpanded,
 }: DashboardHeaderProps) {
   return (
     <header className={styles.header}>
       <div className={styles.titleWrap}>
         <span className={styles.eyebrow}>Dynamic dashboard</span>
-        <h1 className={styles.title}>Unstuck, but interactive.</h1>
+        <h1 className={styles.title}>Workspace first.</h1>
         <p className={styles.description}>
-          This app sits beside the static dashboard and works directly against the canonical
-          <code> index.json </code>
-          contract. Drag work around, edit item markdown, and keep the static browser companion in
-          sync after every mutation.
+          Keep the board, table, day, and timeline as the main surface. Open the overview only
+          when you need history, session traces, or recent memory writes.
         </p>
         {errorMessage ? <div className={styles.error}>{errorMessage}</div> : null}
       </div>
@@ -42,9 +44,14 @@ export function DashboardHeader({
             <span className={styles.metaValue}>{dashboard?.home ?? 'Resolving…'}</span>
           </div>
         </div>
-        <button className={styles.actionButton} onClick={onOpenAiPanel} type="button">
-          Open AI overlay
-        </button>
+        <div className={styles.actionRow}>
+          <button className={styles.secondaryButton} onClick={onToggleOverview} type="button">
+            {overviewExpanded ? 'Hide overview' : 'Show overview'}
+          </button>
+          <button className={styles.actionButton} onClick={onOpenAiPanel} type="button">
+            Open AI panel
+          </button>
+        </div>
       </div>
     </header>
   );

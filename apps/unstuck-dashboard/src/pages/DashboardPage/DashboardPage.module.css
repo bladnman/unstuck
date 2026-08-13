@@ -5,14 +5,22 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 420px;
   gap: var(--space-6);
   align-items: start;
+}
+
+.layoutFull {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.layoutWithRail {
+  grid-template-columns: minmax(0, 1fr) minmax(440px, 560px);
 }
 
 .main {
   display: grid;
   gap: var(--space-6);
+  min-width: 0;
 }
 
 .workspace {
@@ -36,10 +44,33 @@
   top: var(--space-8);
   display: grid;
   gap: var(--space-4);
+  align-self: start;
+  max-height: calc(100vh - (var(--space-8) * 2));
+  min-width: 0;
+}
+
+.railHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(19, 25, 37, 0.98), rgba(12, 17, 28, 0.98));
+  box-shadow: var(--shadow-strong);
+}
+
+.railTitle {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .railTabs {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
@@ -54,55 +85,29 @@
   letter-spacing: 0.02em;
 }
 
+.railTab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .railTabActive {
   color: var(--text-primary);
   background: var(--surface-active);
 }
 
-.emptyRail {
-  padding: var(--space-6);
-  color: var(--text-secondary);
-}
-
-.detailDock {
-  padding: var(--space-5);
-  display: grid;
-  gap: var(--space-4);
-}
-
-.detailDockEyebrow {
-  color: var(--text-dim);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.detailDockTitle {
-  margin: 10px 0 8px;
-  font-size: 22px;
-  letter-spacing: -0.03em;
-}
-
-.detailDockCopy {
-  margin: 0;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.detailDockActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3);
-}
-
-.detailDockButton {
+.railClose {
   border: 1px solid var(--border-soft);
   border-radius: 999px;
   background: rgba(8, 11, 18, 0.74);
   color: var(--text-primary);
-  padding: 12px 14px;
+  padding: 10px 14px;
   font-weight: 700;
+}
+
+.railBody {
+  min-height: 0;
+  overflow: auto;
+  padding-right: 2px;
 }
 
 .detailOverlayBackdrop {
@@ -119,67 +124,41 @@
 
 .detailOverlayShell {
   position: relative;
-  width: min(1120px, 100%);
+  width: min(1320px, 100%);
+  height: calc(100vh - (var(--space-8) * 2));
   margin: auto 0;
 }
 
-.detailOverlayClose {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  z-index: 1;
-  border: 1px solid var(--border-soft);
-  border-radius: 999px;
-  background: rgba(8, 11, 18, 0.82);
-  color: var(--text-primary);
-  padding: 10px 14px;
-  font-weight: 700;
-}
-
-.aiOverlayBackdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 29;
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--space-8);
-  background: rgba(4, 8, 14, 0.64);
-  backdrop-filter: blur(10px);
-  overflow-y: auto;
-}
-
-.aiOverlayShell {
-  position: relative;
-  width: min(980px, 100%);
-  margin: auto 0 auto auto;
-}
-
-@media (max-width: 1380px) {
-  .layout {
+@media (max-width: 1320px) {
+  .layoutWithRail {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .rail {
     position: static;
+    max-height: none;
   }
 }
 
 @media (max-width: 720px) {
+  .page {
+    padding: var(--space-4);
+  }
+
   .detailOverlayBackdrop {
     padding: var(--space-4);
   }
 
-  .aiOverlayBackdrop {
-    padding: var(--space-4);
-    justify-content: center;
+  .detailOverlayShell {
+    height: calc(100vh - (var(--space-4) * 2));
   }
 
-  .aiOverlayShell {
-    margin: auto 0;
+  .railHeader {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .detailOverlayClose {
-    top: 12px;
-    right: 12px;
+  .railClose {
+    width: 100%;
   }
 }

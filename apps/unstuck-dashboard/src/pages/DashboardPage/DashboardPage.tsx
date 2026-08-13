@@ -1,8 +1,7 @@
-import type { MouseEvent } from 'react';
-
 import { DashboardHeader } from '@/pages/DashboardPage/features/DashboardHeader/DashboardHeader';
 import { DashboardFilters } from '@/pages/DashboardPage/features/DashboardFilters/DashboardFilters';
 import { ActivityStrip } from '@/pages/DashboardPage/features/ActivityStrip/ActivityStrip';
+import { OverviewBrowser } from '@/pages/DashboardPage/features/OverviewBrowser/OverviewBrowser';
 import { BoardView } from '@/pages/DashboardPage/features/views/BoardView/BoardView';
 import { DayView } from '@/pages/DashboardPage/features/views/DayView/DayView';
 import { TableView } from '@/pages/DashboardPage/features/views/TableView/TableView';
@@ -24,33 +23,39 @@ export function DashboardPage() {
         }
       : null
   );
-  const isDetailOpen = dashboardPage.panelMode === 'details' && Boolean(detailSurfaceItem);
   const isAiOpen = dashboardPage.panelMode === 'ai';
-
-  const stopOverlayClose = (event: MouseEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-  };
+  const isDetailOverlayOpen = dashboardPage.panelMode === 'details' && Boolean(detailSurfaceItem);
+  const isSessionBrowserOpen = dashboardPage.browserMode === 'sessions';
+  const isMemoryBrowserOpen = dashboardPage.browserMode === 'memory';
 
   return (
     <div className={styles.page}>
-      <div className={styles.layout}>
+      <div className={`${styles.layout} ${isAiOpen ? styles.layoutWithRail : styles.layoutFull}`}>
         <div className={styles.main}>
           <DashboardHeader
             dashboard={dashboardPage.dashboard}
             errorMessage={dashboardPage.errorMessage}
             onOpenAiPanel={() => dashboardPage.setPanelMode('ai')}
+            onToggleOverview={() => dashboardPage.setOverviewExpanded(!dashboardPage.overviewExpanded)}
+            overviewExpanded={dashboardPage.overviewExpanded}
           />
-          <ActivityStrip dashboard={dashboardPage.dashboard} />
           <div className={`${styles.surface} ${styles.workspaceSurface}`}>
             <div className={styles.workspace}>
               <DashboardFilters
                 filters={dashboardPage.filters}
                 onCreateItem={dashboardPage.createItem}
                 onSearchChange={dashboardPage.setSearch}
+                onOpenSelectedItem={() => {
+                  if (dashboardPage.selectedItem) {
+                    dashboardPage.openItemDetail(dashboardPage.selectedItem.id);
+                  }
+                }}
+                onQuickScheduleSelected={dashboardPage.quickScheduleSelected}
                 onSetAllStates={dashboardPage.setAllStates}
                 onToggleState={dashboardPage.toggleState}
                 onViewChange={dashboardPage.setView}
                 onHorizonChange={dashboardPage.setHorizon}
+                selectedItem={dashboardPage.selectedItem}
               />
               {dashboardPage.filters.view === 'table' && (
                 <TableView
@@ -95,100 +100,57 @@ export function DashboardPage() {
               )}
             </div>
           </div>
+          {dashboardPage.overviewExpanded ? (
+            <ActivityStrip
+              dashboard={dashboardPage.dashboard}
+              onFocusNowItems={dashboardPage.focusNowItems}
+              onOpenItem={dashboardPage.openItemDetail}
+              onOpenMemory={(memoryId) =>
+                memoryId ? dashboardPage.openMemoryEntry(memoryId) : dashboardPage.openMemoryBrowser()
+              }
+              onOpenSessions={(sessionId) =>
+                sessionId ? dashboardPage.openSessionEntry(sessionId) : dashboardPage.openSessionBrowser()
+              }
+            />
+          ) : null}
         </div>
 
-        <div className={styles.rail}>
-          <div className={styles.railTabs}>
-            <button
-              className={`${styles.railTab} ${
-                dashboardPage.panelMode === 'details' ? styles.railTabActive : ''
-              }`}
-              onClick={() => dashboardPage.setPanelMode('details')}
-              type="button"
-            >
-              Item detail
-            </button>
-            <button
-              className={`${styles.railTab} ${
-                dashboardPage.panelMode === 'ai' ? styles.railTabActive : ''
-              }`}
-              onClick={() => dashboardPage.setPanelMode('ai')}
-              type="button"
-            >
-              AI panel
-            </button>
-          </div>
+        {isAiOpen ? (
+          <aside className={styles.rail}>
+            <div className={styles.railHeader}>
+              <div className={styles.railTitle}>AI panel</div>
 
-          {dashboardPage.panelMode === 'details' ? (
-            <div className={`${styles.surface} ${styles.detailDock}`}>
-              <div>
-                <span className={styles.detailDockEyebrow}>Detail popup</span>
-                <h3 className={styles.detailDockTitle}>
-                  {dashboardPage.selectedItem ? dashboardPage.selectedItem.title : 'No item selected'}
-                </h3>
-                <p className={styles.detailDockCopy}>
-                  {dashboardPage.selectedItem
-                    ? 'Selecting a tile now opens a dedicated detail surface so the item is visible immediately instead of relying on the sidebar.'
-                    : 'Pick an item from any view to open its detail surface.'}
-                </p>
-              </div>
-              <div className={styles.detailDockActions}>
-                {dashboardPage.selectedItem ? (
-                  <button
-                    className={styles.detailDockButton}
-                    onClick={dashboardPage.closeItemDetail}
-                    type="button"
-                  >
-                    Close detail
-                  </button>
-                ) : null}
-                <button
-                  className={styles.detailDockButton}
-                  onClick={() => dashboardPage.setPanelMode('ai')}
-                  type="button"
-                >
-                  Show AI panel
-                </button>
-              </div>
+              <button
+                className={styles.railClose}
+                onClick={() => dashboardPage.closeAiPanel()}
+                type="button"
+              >
+                Close AI
+              </button>
             </div>
-          ) : (
-            <div className={`${styles.surface} ${styles.detailDock}`}>
-              <div>
-                <span className={styles.detailDockEyebrow}>AI overlay</span>
-                <h3 className={styles.detailDockTitle}>Workspace assistant</h3>
-                <p className={styles.detailDockCopy}>
-                  The AI conversation now opens in a roomier overlay so transcript activity,
-                  commands, and selected-item context are easier to follow than in the rail.
-                </p>
-              </div>
-              <div className={styles.detailDockActions}>
-                <button
-                  className={styles.detailDockButton}
-                  onClick={() => dashboardPage.setPanelMode('details')}
-                  type="button"
-                >
-                  Close AI
-                </button>
-              </div>
+
+            <div className={styles.railBody}>
+              <AiPanel
+                errorMessage={dashboardPage.aiErrorMessage}
+                currentItem={dashboardPage.selectedItem}
+                isStreaming={dashboardPage.isAiStreaming}
+                providers={dashboardPage.providers}
+                session={dashboardPage.aiSession}
+                onSendMessage={dashboardPage.sendAiMessage}
+                onStartSession={dashboardPage.startAiSession}
+              />
             </div>
-          )}
-        </div>
+          </aside>
+        ) : null}
       </div>
 
-      {isDetailOpen && detailSurfaceItem ? (
-        <div className={styles.detailOverlayBackdrop} onClick={dashboardPage.closeItemDetail}>
-          <div className={styles.detailOverlayShell} onClick={stopOverlayClose}>
-            <button
-              aria-label="Close item detail"
-              className={styles.detailOverlayClose}
-              onClick={dashboardPage.closeItemDetail}
-              type="button"
-            >
-              Close
-            </button>
+      {isDetailOverlayOpen ? (
+        <div className={styles.detailOverlayBackdrop}>
+          <div className={styles.detailOverlayShell}>
             <ItemDetailPanel
               item={detailSurfaceItem}
               isLoading={dashboardPage.isLoadingDetail}
+              onClose={dashboardPage.closeItemDetail}
               onSaveDocument={dashboardPage.saveItemDocument}
               onSaveMetadata={dashboardPage.updateItem}
             />
@@ -196,28 +158,42 @@ export function DashboardPage() {
         </div>
       ) : null}
 
-      {isAiOpen ? (
-        <div className={styles.aiOverlayBackdrop} onClick={() => dashboardPage.setPanelMode('details')}>
-          <div className={styles.aiOverlayShell} onClick={stopOverlayClose}>
-            <button
-              aria-label="Close AI overlay"
-              className={styles.detailOverlayClose}
-              onClick={() => dashboardPage.setPanelMode('details')}
-              type="button"
-            >
-              Close
-            </button>
-            <AiPanel
-              errorMessage={dashboardPage.aiErrorMessage}
-              currentItem={dashboardPage.selectedItem}
-              isStreaming={dashboardPage.isAiStreaming}
-              providers={dashboardPage.providers}
-              session={dashboardPage.aiSession}
-              onSendMessage={dashboardPage.sendAiMessage}
-              onStartSession={dashboardPage.startAiSession}
-            />
-          </div>
-        </div>
+      {isSessionBrowserOpen ? (
+        <OverviewBrowser
+          detailMarkdown={dashboardPage.sessionDetail?.markdown || ''}
+          detailTitle={dashboardPage.sessionDetail?.id || 'Session detail'}
+          entries={dashboardPage.sessionEntries.map((entry) => ({
+            id: entry.id,
+            title: entry.id,
+            description: entry.summary,
+            meta: `${entry.updatedAt} · ${entry.itemsTouchedCount} items · ${entry.rawInputCount} raw inputs`,
+          }))}
+          errorMessage={dashboardPage.browserErrorMessage}
+          isLoading={dashboardPage.browserLoading}
+          onClose={dashboardPage.closeBrowser}
+          onSelect={dashboardPage.openSessionEntry}
+          selectedId={dashboardPage.sessionDetail?.id || null}
+          title="Sessions"
+        />
+      ) : null}
+
+      {isMemoryBrowserOpen ? (
+        <OverviewBrowser
+          detailMarkdown={dashboardPage.memoryDetail?.markdown || ''}
+          detailTitle={dashboardPage.memoryDetail?.title || 'Memory detail'}
+          entries={dashboardPage.memoryEntries.map((entry) => ({
+            id: entry.id,
+            title: entry.title,
+            description: entry.description || 'No description captured yet.',
+            meta: `${entry.updatedAt} · ${entry.type || 'memory'}`,
+          }))}
+          errorMessage={dashboardPage.browserErrorMessage}
+          isLoading={dashboardPage.browserLoading}
+          onClose={dashboardPage.closeBrowser}
+          onSelect={dashboardPage.openMemoryEntry}
+          selectedId={dashboardPage.memoryDetail?.id || null}
+          title="Memory"
+        />
       ) : null}
     </div>
   );

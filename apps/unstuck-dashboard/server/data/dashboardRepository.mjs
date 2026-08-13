@@ -4,6 +4,8 @@ import path from 'node:path';
 import {
   buildDashboardMeta,
   buildSearchText,
+  collectRecentMemory,
+  collectRecentSessions,
   loadCanonicalIndex,
   parseIsoDate,
   todayIsoDate,
@@ -30,13 +32,26 @@ function normalizePatch(patch) {
   const nextPatch = { ...patch };
 
   if (typeof nextPatch.durationDays === 'string') {
-    nextPatch.durationDays = Number(nextPatch.durationDays) || undefined;
+    nextPatch.durationDays = nextPatch.durationDays.trim()
+      ? (Number(nextPatch.durationDays) || undefined)
+      : null;
   }
   if (typeof nextPatch.durationMinutes === 'string') {
-    nextPatch.durationMinutes = Number(nextPatch.durationMinutes) || undefined;
+    nextPatch.durationMinutes = nextPatch.durationMinutes.trim()
+      ? (Number(nextPatch.durationMinutes) || undefined)
+      : null;
   }
   if (typeof nextPatch.rank === 'string') {
     nextPatch.rank = Number(nextPatch.rank);
+  }
+  if (nextPatch.dueDate === '') {
+    nextPatch.dueDate = null;
+  }
+  if (nextPatch.plannedStart === '') {
+    nextPatch.plannedStart = null;
+  }
+  if (nextPatch.fixedStartTime === '') {
+    nextPatch.fixedStartTime = null;
   }
   if (nextPatch.dueDate && !parseIsoDate(nextPatch.dueDate)) {
     delete nextPatch.dueDate;
@@ -55,6 +70,12 @@ function normalizePatch(patch) {
     && (!Number.isFinite(nextPatch.durationMinutes) || nextPatch.durationMinutes <= 0)
   ) {
     delete nextPatch.durationMinutes;
+  }
+  if (
+    typeof nextPatch.durationDays === 'number'
+    && (!Number.isFinite(nextPatch.durationDays) || nextPatch.durationDays <= 0)
+  ) {
+    delete nextPatch.durationDays;
   }
 
   return nextPatch;
@@ -94,6 +115,7 @@ function buildNewItem(payload) {
     durationDays: payload.durationDays,
     dueDate: payload.dueDate,
     scheduleMode: payload.scheduleMode,
+    planningMode: payload.planningMode || 'unscheduled',
     rank: typeof payload.rank === 'number' ? payload.rank : undefined,
     searchText: buildSearchText([title, summary, payload.status]),
   };
@@ -209,4 +231,42 @@ export async function saveDashboardItemDocument(home, itemId, markdown) {
   }
 
   return getDashboardItem(home, itemId);
+}
+
+export async function listDashboardSessions(home) {
+  const sessions = await collectRecentSessions(home, Number.MAX_SAFE_INTEGER);
+  return sessions.recentSessions;
+}
+
+export async function getDashboardSession(home, sessionId) {
+  const sessions = await listDashboardSessions(home);
+  const match = sessions.find((entry) => entry.id === sessionId);
+  if (!match) {
+    return null;
+  }
+
+  const markdown = await fs.readFile(path.join(home, match.path), 'utf8');
+  return {
+    ...match,
+    markdown,
+  };
+}
+
+export async function listDashboardMemory(home) {
+  const memory = await collectRecentMemory(home, Number.MAX_SAFE_INTEGER);
+  return memory.recentMemory;
+}
+
+export async function getDashboardMemory(home, memoryId) {
+  const memoryFiles = await listDashboardMemory(home);
+  const match = memoryFiles.find((entry) => entry.id === memoryId);
+  if (!match) {
+    return null;
+  }
+
+  const markdown = await fs.readFile(path.join(home, match.path), 'utf8');
+  return {
+    ...match,
+    markdown,
+  };
 }

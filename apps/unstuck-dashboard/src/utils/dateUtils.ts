@@ -1,6 +1,7 @@
 import type { HorizonValue, UnstuckItem } from '@/types/unstuck';
 
 const horizonDays: Record<HorizonValue, number> = {
+  all: 3650,
   today: 1,
   '3d': 3,
   week: 7,
@@ -86,6 +87,10 @@ export function getDayRangeDates(horizon: HorizonValue) {
 }
 
 export function getItemFocusDate(item: UnstuckItem) {
+  if (item.planningMode === 'unscheduled') {
+    return undefined;
+  }
+
   return item.plannedStart || item.dueDate || item.expiresOn || undefined;
 }
 
@@ -127,7 +132,7 @@ export function formatDurationMinutes(value?: number) {
 }
 
 export function isItemInHorizon(item: UnstuckItem, horizon: HorizonValue) {
-  if (horizon === '8w') {
+  if (horizon === 'all' || horizon === '8w') {
     return true;
   }
 

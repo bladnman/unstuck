@@ -338,6 +338,7 @@ export function backfillOptimisticPlanning(items, referenceDate) {
     const pending = nextItems
       .filter((item) => item.state === seed.state)
       .filter((item) => (normalizeScheduleMode(item.scheduleMode) || 'all-days') === seed.scheduleMode)
+      .filter((item) => item.planningMode !== 'unscheduled')
       .filter((item) => !parseIsoDate(item.plannedStart) || !normalizeDurationDays(item.durationDays))
       .sort(comparePlanningPriority);
 
@@ -452,7 +453,7 @@ function parseFrontmatter(markdown) {
   return meta;
 }
 
-async function collectRecentSessions(home, limit = 4) {
+export async function collectRecentSessions(home, limit = 4) {
   const sessionsDir = path.join(home, 'sessions');
   if (!await exists(sessionsDir)) {
     return { sessionCount: 0, recentSessions: [] };
@@ -498,7 +499,7 @@ async function collectRecentSessions(home, limit = 4) {
   };
 }
 
-async function collectRecentMemory(home, limit = 6) {
+export async function collectRecentMemory(home, limit = 6) {
   const memoryDir = path.join(home, 'memory');
   if (!await exists(memoryDir)) {
     return { memoryCount: 0, recentMemory: [] };

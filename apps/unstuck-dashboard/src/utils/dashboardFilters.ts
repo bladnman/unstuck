@@ -41,7 +41,9 @@ export function getFilteredItems(items: UnstuckItem[], filters: DashboardFilters
       return false;
     }
 
-    if (!isItemInHorizon(item, filters.horizon) && !(filters.view === 'day' && !getItemFocusDate(item))) {
+    const focusDate = getItemFocusDate(item);
+    const allowUnscheduled = !focusDate;
+    if (!isItemInHorizon(item, filters.horizon) && !(filters.view === 'day' && allowUnscheduled) && !allowUnscheduled) {
       return false;
     }
 
@@ -101,11 +103,13 @@ export function getDayBuckets(items: UnstuckItem[]) {
 }
 
 export function buildColumnRanks(items: UnstuckItem[], state: ItemState) {
-  return sortItemsForInteraction(items.filter((item) => item.state === state)).map((item, index) => ({
+  return items
+    .filter((item) => item.state === state)
+    .map((item, index) => ({
     id: item.id,
     patch: {
       state,
       rank: (index + 1) * 100,
     },
-  }));
+    }));
 }

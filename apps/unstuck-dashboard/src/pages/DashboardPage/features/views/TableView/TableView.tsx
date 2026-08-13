@@ -1,6 +1,6 @@
 import { Badge } from '@/components/Badge/Badge';
 import type { UnstuckItem } from '@/types/unstuck';
-import { formatDurationMinutes, getDateLabel } from '@/utils/dateUtils';
+import { formatDurationMinutes, getDateLabel, getItemFocusDate } from '@/utils/dateUtils';
 
 import styles from './TableView.module.css';
 
@@ -49,7 +49,7 @@ export function TableView({
                 <span className={styles.status}>{item.status}</span>
               </td>
               <td className={styles.cell}>
-                {getDateLabel(item.plannedStart)}
+                {getDateLabel(getItemFocusDate(item))}
                 {item.fixedStartTime ? ` · ${item.fixedStartTime}` : ''}
                 {item.durationMinutes ? ` · ${formatDurationMinutes(item.durationMinutes)}` : ''}
               </td>

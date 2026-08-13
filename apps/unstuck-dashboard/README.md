@@ -25,6 +25,24 @@ To point it at a specific Unstuck data directory:
 UNSTUCK_HOME=/absolute/path/to/unstuck npm run dev
 ```
 
+## Always-on on macOS
+
+If you want the dashboard available all the time without keeping a terminal tab open, install the LaunchAgent from the repo root:
+
+```bash
+node scripts/manage_dashboard_service.mjs install
+```
+
+That installs a user LaunchAgent, keeps the server on port `4004`, and creates a Spotlight-friendly bookmark at `~/Applications/Unstuck.webloc`.
+
+The browser URL is:
+
+```text
+http://unstuck.localhost:4004
+```
+
+For status, restart, stop, and uninstall commands, see [documents/operations/OPERATIONS_dashboard_service.md](/Users/mmaher/code/unstuck/documents/operations/OPERATIONS_dashboard_service.md).
+
 ## Verify
 
 ```bash

@@ -9,15 +9,20 @@ import type {
   HorizonValue,
   ItemDetail,
   ItemState,
+  MemoryBrowserDetail,
+  MemoryBrowserEntry,
+  SessionBrowserDetail,
+  SessionBrowserEntry,
   UnstuckItem,
 } from '@/types/unstuck';
+import { addUtcDays, formatIsoDate, getTodayIsoDate } from '@/utils/dateUtils';
 import { getFilteredItems, stateOrder } from '@/utils/dashboardFilters';
 
 const defaultFilters: DashboardFilters = {
   search: '',
   states: [...stateOrder],
   view: 'board',
-  horizon: '2w',
+  horizon: 'all',
 };
 
 async function getJson<T>(url: string) {
@@ -51,6 +56,25 @@ function patchLocalItem(items: UnstuckItem[], itemId: string, patch: Partial<Uns
   return items.map((item) => (item.id === itemId ? { ...item, ...patch } : item));
 }
 
+function coerceHorizonForView(view: DashboardView, horizon: HorizonValue) {
+  if (view === 'day') {
+    return horizon === 'today' || horizon === '3d' || horizon === 'week' ? horizon : 'week';
+  }
+
+  if (view === 'timeline') {
+    return horizon === 'week' || horizon === '2w' || horizon === '4w' || horizon === '8w'
+      ? horizon
+      : '2w';
+  }
+
+  return horizon;
+}
+
+function relativeDate(offsetDays: number) {
+  const today = new Date(`${getTodayIsoDate()}T00:00:00Z`);
+  return formatIsoDate(addUtcDays(today, offsetDays));
+}
+
 export function useDashboardPage() {
   const [dashboard, setDashboard] = useState<DashboardResponse | null>(null);
   const [filters, setFilters] = useState<DashboardFilters>(defaultFilters);
@@ -59,11 +83,19 @@ export function useDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingDetail, setIsLoadingDetail] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [panelMode, setPanelMode] = useState<'details' | 'ai'>('details');
+  const [panelMode, setPanelMode] = useState<'details' | 'ai' | 'none'>('none');
   const [providers, setProviders] = useState<AiProvider[]>([]);
   const [aiSession, setAiSession] = useState<AiSession | null>(null);
   const [isAiStreaming, setIsAiStreaming] = useState(false);
   const [aiErrorMessage, setAiErrorMessage] = useState('');
+  const [overviewExpanded, setOverviewExpanded] = useState(false);
+  const [browserMode, setBrowserMode] = useState<'sessions' | 'memory' | null>(null);
+  const [browserLoading, setBrowserLoading] = useState(false);
+  const [browserErrorMessage, setBrowserErrorMessage] = useState('');
+  const [sessionEntries, setSessionEntries] = useState<SessionBrowserEntry[]>([]);
+  const [sessionDetail, setSessionDetail] = useState<SessionBrowserDetail | null>(null);
+  const [memoryEntries, setMemoryEntries] = useState<MemoryBrowserEntry[]>([]);
+  const [memoryDetail, setMemoryDetail] = useState<MemoryBrowserDetail | null>(null);
   const detailRequestId = useRef(0);
 
   const refreshDashboard = async () => {
@@ -112,7 +144,11 @@ export function useDashboardPage() {
     setSelectedItemId(null);
     setItemDetail(null);
     setIsLoadingDetail(false);
-    setPanelMode('ai');
+    setPanelMode('none');
+  };
+
+  const closeAiPanel = () => {
+    setPanelMode('none');
   };
 
   const updateItem = async (itemId: string, patch: Partial<UnstuckItem>) => {
@@ -157,6 +193,7 @@ export function useDashboardPage() {
     const created = await sendJson<UnstuckItem>('/api/items', 'POST', {
       title,
       summary,
+      planningMode: 'unscheduled',
     });
     await refreshDashboard();
     openItemDetail(created.id);
@@ -204,6 +241,98 @@ export function useDashboardPage() {
       setAiErrorMessage(error instanceof Error ? error.message : 'Unable to send AI message');
       throw error;
     }
+  };
+
+  const openSessionBrowser = async () => {
+    try {
+      setBrowserMode('sessions');
+      setBrowserLoading(true);
+      setBrowserErrorMessage('');
+      const entries = await getJson<SessionBrowserEntry[]>('/api/sessions');
+      setSessionEntries(entries);
+      if (entries.length) {
+        setSessionDetail(await getJson<SessionBrowserDetail>(`/api/sessions/${entries[0].id}`));
+      } else {
+        setSessionDetail(null);
+      }
+    } catch (error) {
+      setBrowserErrorMessage(error instanceof Error ? error.message : 'Unable to load sessions');
+    } finally {
+      setBrowserLoading(false);
+    }
+  };
+
+  const openSessionEntry = async (sessionId: string) => {
+    try {
+      setBrowserMode('sessions');
+      setBrowserLoading(true);
+      setBrowserErrorMessage('');
+      if (!sessionEntries.length) {
+        setSessionEntries(await getJson<SessionBrowserEntry[]>('/api/sessions'));
+      }
+      setSessionDetail(await getJson<SessionBrowserDetail>(`/api/sessions/${sessionId}`));
+    } catch (error) {
+      setBrowserErrorMessage(error instanceof Error ? error.message : 'Unable to load session');
+    } finally {
+      setBrowserLoading(false);
+    }
+  };
+
+  const openMemoryBrowser = async () => {
+    try {
+      setBrowserMode('memory');
+      setBrowserLoading(true);
+      setBrowserErrorMessage('');
+      const entries = await getJson<MemoryBrowserEntry[]>('/api/memory');
+      setMemoryEntries(entries);
+      if (entries.length) {
+        setMemoryDetail(await getJson<MemoryBrowserDetail>(`/api/memory/${entries[0].id}`));
+      } else {
+        setMemoryDetail(null);
+      }
+    } catch (error) {
+      setBrowserErrorMessage(error instanceof Error ? error.message : 'Unable to load memory');
+    } finally {
+      setBrowserLoading(false);
+    }
+  };
+
+  const openMemoryEntry = async (memoryId: string) => {
+    try {
+      setBrowserMode('memory');
+      setBrowserLoading(true);
+      setBrowserErrorMessage('');
+      if (!memoryEntries.length) {
+        setMemoryEntries(await getJson<MemoryBrowserEntry[]>('/api/memory'));
+      }
+      setMemoryDetail(await getJson<MemoryBrowserDetail>(`/api/memory/${memoryId}`));
+    } catch (error) {
+      setBrowserErrorMessage(error instanceof Error ? error.message : 'Unable to load memory file');
+    } finally {
+      setBrowserLoading(false);
+    }
+  };
+
+  const closeBrowser = () => {
+    setBrowserMode(null);
+    setBrowserErrorMessage('');
+  };
+
+  const quickScheduleItem = async (itemId: string, preset: 'today' | 'tomorrow' | 'next-week' | 'unscheduled') => {
+    if (preset === 'unscheduled') {
+      await updateItem(itemId, {
+        plannedStart: null,
+        fixedStartTime: null,
+        planningMode: 'unscheduled',
+      });
+      return;
+    }
+
+    const offset = preset === 'today' ? 0 : preset === 'tomorrow' ? 1 : 7;
+    await updateItem(itemId, {
+      plannedStart: relativeDate(offset),
+      planningMode: 'optimistic',
+    });
   };
 
   useEffect(() => {
@@ -261,42 +390,74 @@ export function useDashboardPage() {
     dashboard,
     filters,
     setSearch(search: string) {
-      setFilters({ ...filters, search });
+      setFilters((current) => ({ ...current, search }));
     },
     setView(view: DashboardView) {
-      const nextHorizon = view === 'day'
-        ? (filters.horizon === 'today' || filters.horizon === '3d' || filters.horizon === 'week'
-          ? filters.horizon
-          : 'week')
-        : filters.horizon;
-
-      setFilters({ ...filters, view, horizon: nextHorizon });
+      setFilters((current) => ({
+        ...current,
+        view,
+        horizon: coerceHorizonForView(view, current.horizon),
+      }));
     },
     setHorizon(horizon: HorizonValue) {
-      setFilters({ ...filters, horizon });
+      setFilters((current) => ({ ...current, horizon }));
     },
     toggleState(state: ItemState) {
-      const stateSet = new Set(filters.states);
-      if (stateSet.has(state)) {
-        stateSet.delete(state);
-      } else {
-        stateSet.add(state);
-      }
+      setFilters((current) => {
+        const stateSet = new Set(current.states);
+        if (stateSet.has(state)) {
+          stateSet.delete(state);
+        } else {
+          stateSet.add(state);
+        }
 
-      const nextStates = stateOrder.filter((entry) => stateSet.has(entry));
-      setFilters({
-        ...filters,
-        states: nextStates.length ? nextStates : [state],
+        const nextStates = stateOrder.filter((entry) => stateSet.has(entry));
+        return {
+          ...current,
+          states: nextStates.length ? nextStates : [state],
+        };
       });
     },
     setAllStates() {
-      setFilters({ ...filters, states: [...stateOrder] });
+      setFilters((current) => ({ ...current, states: [...stateOrder] }));
     },
+    focusNowItems() {
+      setFilters((current) => ({
+        ...current,
+        view: 'board',
+        horizon: 'all',
+        states: ['active', 'simmering'],
+      }));
+      setOverviewExpanded(false);
+    },
+    overviewExpanded,
+    setOverviewExpanded,
+    browserMode,
+    browserLoading,
+    browserErrorMessage,
+    sessionEntries,
+    sessionDetail,
+    memoryEntries,
+    memoryDetail,
+    openSessionBrowser,
+    openSessionEntry,
+    openMemoryBrowser,
+    openMemoryEntry,
+    closeBrowser,
     visibleItems,
     selectedItem,
     selectedItemId,
     openItemDetail,
     closeItemDetail,
+    closeAiPanel,
+    quickScheduleSelected(preset: 'today' | 'tomorrow' | 'next-week' | 'unscheduled') {
+      if (!selectedItemId) {
+        return Promise.resolve();
+      }
+
+      return quickScheduleItem(selectedItemId, preset);
+    },
+    quickScheduleItem,
     itemDetail,
     isLoading,
     isLoadingDetail,

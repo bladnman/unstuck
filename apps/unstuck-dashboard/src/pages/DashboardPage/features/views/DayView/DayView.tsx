@@ -1,7 +1,16 @@
 import type { CSSProperties } from 'react';
 import { useMemo, useState } from 'react';
 
-import { DndContext, DragEndEvent, DragStartEvent, useDraggable, useDroppable } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  DragStartEvent,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 
 import type { HorizonValue, UnstuckItem } from '@/types/unstuck';
@@ -54,7 +63,7 @@ function ScheduledCard({
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: item.id,
   });
-  const startMinutes = parseClockTime(item.fixedStartTime) ?? START_MINUTES;
+  const startMinutes = parseClockTime(item.fixedStartTime || undefined) ?? START_MINUTES;
   const durationMinutes = item.durationMinutes || 60;
   const offsetMinutes = Math.max(0, startMinutes - START_MINUTES);
   const top = (offsetMinutes / SLOT_MINUTES) * SLOT_HEIGHT;
@@ -130,6 +139,13 @@ export function DayView({
   const [activeId, setActiveId] = useState<string | null>(null);
   const visibleDates = useMemo(() => getDayRangeDates(horizon), [horizon]);
   const slotTimes = useMemo(() => buildSlotTimes(), []);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
 
   const scheduledItems = items.filter(
     (item) => item.plannedStart && item.fixedStartTime && visibleDates.includes(item.plannedStart),
@@ -173,6 +189,7 @@ export function DayView({
       <DndContext
         onDragEnd={handleDragEnd}
         onDragStart={(event: DragStartEvent) => setActiveId(String(event.active.id))}
+        sensors={sensors}
       >
         <section className={styles.unscheduledStrip}>
           <div className={styles.unscheduledHeader}>
@@ -209,7 +226,10 @@ export function DayView({
             {visibleDates.map((date) => {
               const itemsForDay = scheduledItems
                 .filter((item) => item.plannedStart === date)
-                .sort((left, right) => (parseClockTime(left.fixedStartTime) || 0) - (parseClockTime(right.fixedStartTime) || 0));
+                .sort((left, right) =>
+                  (parseClockTime(left.fixedStartTime || undefined) || 0)
+                  - (parseClockTime(right.fixedStartTime || undefined) || 0),
+                );
 
               return (
                 <section className={styles.dayColumn} key={date}>

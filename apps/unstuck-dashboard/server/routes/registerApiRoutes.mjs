@@ -4,6 +4,10 @@ import {
   createDashboardItem,
   getDashboardData,
   getDashboardItem,
+  getDashboardMemory,
+  getDashboardSession,
+  listDashboardMemory,
+  listDashboardSessions,
   saveDashboardItemDocument,
   updateDashboardItem,
 } from '../data/dashboardRepository.mjs';
@@ -43,6 +47,50 @@ export function registerApiRoutes({
       }
 
       response.json(item);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  apiRouter.get('/sessions', async (_request, response, next) => {
+    try {
+      response.json(await listDashboardSessions(await getHome()));
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  apiRouter.get('/sessions/:sessionId', async (request, response, next) => {
+    try {
+      const session = await getDashboardSession(await getHome(), request.params.sessionId);
+      if (!session) {
+        response.status(404).json({ message: 'Session not found' });
+        return;
+      }
+
+      response.json(session);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  apiRouter.get('/memory', async (_request, response, next) => {
+    try {
+      response.json(await listDashboardMemory(await getHome()));
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  apiRouter.get('/memory/:memoryId', async (request, response, next) => {
+    try {
+      const memory = await getDashboardMemory(await getHome(), request.params.memoryId);
+      if (!memory) {
+        response.status(404).json({ message: 'Memory file not found' });
+        return;
+      }
+
+      response.json(memory);
     } catch (error) {
       next(error);
     }

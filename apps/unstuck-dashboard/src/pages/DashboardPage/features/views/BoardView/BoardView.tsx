@@ -6,7 +6,10 @@ import {
   DndContext,
   DragEndEvent,
   DragStartEvent,
+  PointerSensor,
   useDroppable,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -29,13 +32,17 @@ interface BoardViewProps {
 
 function Column({
   children,
-  items,
+  collapsed,
   compactCards,
+  items,
+  onToggleCollapsed,
   state,
 }: {
   children: ReactNode;
+  collapsed: boolean;
   compactCards: boolean;
   items: UnstuckItem[];
+  onToggleCollapsed: () => void;
   state: ItemState;
 }) {
   const { setNodeRef } = useDroppable({
@@ -43,15 +50,26 @@ function Column({
   });
 
   return (
-    <div className={styles.column} ref={setNodeRef}>
+    <div className={`${styles.column} ${collapsed ? styles.columnCollapsed : ''}`} ref={setNodeRef}>
       <div className={styles.columnHeader}>
         <div>
           <span>{state}</span>
-          <div className={styles.columnHint}>Top to bottom is current order</div>
+          <div className={styles.columnHint}>
+            {collapsed ? 'Collapsed, but still a drop target' : 'Top to bottom is current order'}
+          </div>
         </div>
-        <span className={styles.count}>{items.length}</span>
+        <div className={styles.columnActions}>
+          <span className={styles.count}>{items.length}</span>
+          <button className={styles.columnToggle} onClick={onToggleCollapsed} type="button">
+            {collapsed ? 'Open' : 'Hide'}
+          </button>
+        </div>
       </div>
-      <div className={`${styles.cardList} ${compactCards ? styles.cardListCompact : ''}`}>{children}</div>
+      {!collapsed ? (
+        <div className={`${styles.cardList} ${compactCards ? styles.cardListCompact : ''}`}>{children}</div>
+      ) : (
+        <div className={styles.collapsedDropHint}>Drop items here</div>
+      )}
     </div>
   );
 }
@@ -74,30 +92,37 @@ function SortableCard({
   });
 
   return (
-    <button
+    <div
       className={`${styles.card} ${compactCards ? styles.cardCompact : ''} ${isSelected ? styles.cardSelected : ''} ${
         isDragging ? styles.cardDragging : ''
       }`}
-      onClick={() => onOpenItem(item.id)}
       ref={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
       }}
-      type="button"
-      {...attributes}
-      {...listeners}
     >
-      <div className={styles.cardTopline}>
-        <span className={styles.cardRank}>#{index + 1}</span>
-        <h3 className={styles.cardTitle}>{item.title}</h3>
-      </div>
-      {!compactCards ? <p className={styles.cardSummary}>{item.summary}</p> : null}
-      <div className={`${styles.cardMeta} ${compactCards ? styles.cardMetaCompact : ''}`}>
-        <span>{compactCards ? item.status : item.status}</span>
-        {!compactCards ? <span>{item.lastTouched}</span> : null}
-      </div>
-    </button>
+      <button className={styles.cardOpenButton} onClick={() => onOpenItem(item.id)} type="button">
+        <div className={styles.cardTopline}>
+          <span className={styles.cardRank}>#{index + 1}</span>
+          <h3 className={styles.cardTitle}>{item.title}</h3>
+        </div>
+        {!compactCards ? <p className={styles.cardSummary}>{item.summary}</p> : null}
+        <div className={`${styles.cardMeta} ${compactCards ? styles.cardMetaCompact : ''}`}>
+          <span>{item.status}</span>
+          {!compactCards ? <span>{item.lastTouched}</span> : null}
+        </div>
+      </button>
+      <button
+        className={styles.dragHandle}
+        type="button"
+        aria-label={`Reorder ${item.title}`}
+        {...attributes}
+        {...listeners}
+      >
+        Drag
+      </button>
+    </div>
   );
 }
 
@@ -109,7 +134,15 @@ export function BoardView({
 }: BoardViewProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [compactCards, setCompactCards] = useState(true);
+  const [collapsedStates, setCollapsedStates] = useState<ItemState[]>(['archived', 'resolved']);
   const groupedItems = groupItemsByState(items);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
 
   const handleDragEnd = async (event: DragEndEvent) => {
     setActiveId(null);
@@ -144,10 +177,12 @@ export function BoardView({
       targetItems.push({ ...activeItem, state: targetColumn as ItemState });
     }
 
-    const updates = [
-      ...buildColumnRanks(nextGroups[activeItem.state], activeItem.state),
-      ...buildColumnRanks(nextGroups[targetColumn as ItemState], targetColumn as ItemState),
-    ];
+    const updates = activeItem.state === targetColumn
+      ? buildColumnRanks(nextGroups[targetColumn as ItemState], targetColumn as ItemState)
+      : [
+          ...buildColumnRanks(nextGroups[activeItem.state], activeItem.state),
+          ...buildColumnRanks(nextGroups[targetColumn as ItemState], targetColumn as ItemState),
+        ];
 
     await onReorderItems(updates);
   };
@@ -157,14 +192,15 @@ export function BoardView({
       collisionDetection={closestCorners}
       onDragEnd={handleDragEnd}
       onDragStart={(event: DragStartEvent) => setActiveId(String(event.active.id))}
+      sensors={sensors}
     >
       <div className={styles.boardShell}>
         <div className={styles.boardToolbar}>
           <div className={styles.boardCopy}>
             <h3 className={styles.boardTitle}>Board view</h3>
             <p className={styles.boardDescription}>
-              Use compact cards when you just want to reorder titles quickly, then expand when you
-              need the extra context.
+              This board now defaults to a true Kanban posture: you can keep unscheduled ideas
+              visible, collapse colder states, and open items without fighting drag mode.
             </p>
           </div>
           <button
@@ -176,29 +212,45 @@ export function BoardView({
           </button>
         </div>
         <div className={styles.board}>
-        {stateOrder.map((state) => (
-          <Column compactCards={compactCards} items={groupedItems[state]} key={state} state={state}>
-            <SortableContext
-              items={groupedItems[state].map((item) => item.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {groupedItems[state].length ? (
-                groupedItems[state].map((item, index) => (
-                  <SortableCard
-                    compactCards={compactCards}
-                    index={index}
-                    isSelected={selectedItemId === item.id || activeId === item.id}
-                    item={item}
-                    key={item.id}
-                    onOpenItem={onOpenItem}
-                  />
-                ))
-              ) : (
-                <div className={styles.empty}>No items here yet.</div>
-              )}
-            </SortableContext>
-          </Column>
-        ))}
+          {stateOrder.map((state) => {
+            const collapsed = collapsedStates.includes(state);
+            return (
+              <Column
+                collapsed={collapsed}
+                compactCards={compactCards}
+                items={groupedItems[state]}
+                key={state}
+                onToggleCollapsed={() =>
+                  setCollapsedStates((current) =>
+                    current.includes(state)
+                      ? current.filter((entry) => entry !== state)
+                      : [...current, state],
+                  )
+                }
+                state={state}
+              >
+                <SortableContext
+                  items={groupedItems[state].map((item) => item.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {groupedItems[state].length ? (
+                    groupedItems[state].map((item, index) => (
+                      <SortableCard
+                        compactCards={compactCards}
+                        index={index}
+                        isSelected={selectedItemId === item.id || activeId === item.id}
+                        item={item}
+                        key={item.id}
+                        onOpenItem={onOpenItem}
+                      />
+                    ))
+                  ) : (
+                    <div className={styles.empty}>No items here yet.</div>
+                  )}
+                </SortableContext>
+              </Column>
+            );
+          })}
         </div>
       </div>
     </DndContext>
